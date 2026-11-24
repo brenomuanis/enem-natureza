@@ -32,7 +32,8 @@ async function redePrimeiro(req) {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 4000);
-    const res = await fetch(req, { signal: ctrl.signal, cache: 'no-store' });
+    // um pedido de navegação não pode ser recriado com opções: busca pela URL
+    const res = await fetch(req.url, { signal: ctrl.signal, cache: 'no-store', credentials: 'same-origin' });
     clearTimeout(t);
     if (res.ok) (await caches.open(RUNTIME)).put(req, res.clone());
     return res;
