@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ENEM Natureza</title>
+<meta name="description" content="Banco de questões de Ciências da Natureza do ENEM para estudar offline.">
+<meta name="theme-color" content="#101828">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ENEM Natureza">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  /* Layout: barra fixa no topo (marca, abas das matérias, busca, sortear) + uma coluna central de leitura;
+     cada matéria tinge seu cabeçalho com a própria cor; a questão abre em modo prova, com barra de ação embaixo. */
+  :root {
+    --bg: #eef1f5; --surface: #ffffff; --sunk: #f5f7fa; --ink: #101828; --muted: #5b6475; --line: #dde2ea; --line-strong: #c3cad6;
+    --primary: #101828; --on-primary: #ffffff; --focus: #3b6ef5;
+    --bio: #15803d; --fis: #1d4ed8; --qui: #c2410c;
+    --good: #15803d; --good-soft: #e6f4ea; --bad: #c62828; --bad-soft: #fcebea; --gold: #b7791f;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 6px 18px rgba(16, 24, 40, .06);
+    --f-ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --f-text: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-code: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --r: 14px; --r-sm: 9px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0b0e13; --surface: #141921; --sunk: #10141b; --ink: #e8ecf2; --muted: #98a2b3; --line: #242b37; --line-strong: #364153;
+    --primary: #e8ecf2; --on-primary: #0b0e13; --focus: #7fa3ff;
+    --bio: #4ade80; --fis: #7ea3ff; --qui: #fb923c;
+    --good: #4ade80; --good-soft: #0f2a1b; --bad: #ff7b72; --bad-soft: #391614; --gold: #f2c14e;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
+  } }
+  :root[data-theme="dark"] {
+    --bg: #0b0e13; --surface: #141921; --sunk: #10141b; --ink: #e8ecf2; --muted: #98a2b3; --line: #242b37; --line-strong: #364153;
+    --primary: #e8ecf2; --on-primary: #0b0e13; --focus: #7fa3ff;
+    --bio: #4ade80; --fis: #7ea3ff; --qui: #fb923c;
+    --good: #4ade80; --good-soft: #0f2a1b; --bad: #ff7b72; --bad-soft: #391614; --gold: #f2c14e;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+  svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .inner { max-width: 1120px; margin: 0 auto; }
+
+  /* barra do topo */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; min-height: 100vh; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  .appbar { position: sticky; top: 0; padding-top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--surface) 92%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .net { font-size: .74rem; font-weight: 600; border-radius: 999px; padding: 3px 9px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; background: var(--sunk); }
+  .net.ok { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); }
+  .net.load { color: var(--focus); }
+  @media (max-width: 420px) { #sortear-topo span { display: none; } .net { display: none; } }
+
+  /* rascunho à mão */
+  .paper { position: relative; }
+  canvas.tinta { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; touch-action: auto; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .desenhando canvas.tinta { pointer-events: auto; touch-action: none; }
+  .desenhando .paper { box-shadow: 0 0 0 2px var(--focus); }
+  .folha { position: relative; border-radius: var(--r); border: 1px solid var(--line); background-color: var(--surface);
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 24px 24px; overflow: hidden; }
+  .folha .rot { position: absolute; top: 8px; left: 12px; font-size: .78rem; color: var(--muted); font-weight: 600; pointer-events: none; z-index: 1; }
+  .folha canvas.tinta { position: absolute; }
+  .desenhando .folha { box-shadow: 0 0 0 2px var(--focus); }
+  .ferramentas { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding-block: 8px 0; scrollbar-width: none; max-width: 820px; margin: 0 auto; }
+  .ferramentas::-webkit-scrollbar { display: none; }
+  .ferramentas .sep { width: 1px; align-self: stretch; background: var(--line); margin: 2px 2px; flex: none; }
+  .fer { flex: none; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; padding: 0; }
+  .fer[aria-pressed="true"] { border-color: var(--focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus) 30%, transparent); }
+  .fer .cor { width: 18px; height: 18px; border-radius: 50%; display: block; }
+  .fer .mt { width: 20px; height: 10px; border-radius: 3px; display: block; opacity: .6; }
+  .lapis[aria-pressed="true"] { background: var(--focus); color: #fff; border-color: var(--focus); }
+  @media (max-width: 480px) { .mark .lbl { display: none; } .mark { padding: 8px; } }
+  .arquivo { position: relative; overflow: hidden; }
+  .arquivo input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .appbar .inner { display: flex; align-items: center; gap: 14px; padding-block: 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 0; font-weight: 700; font-size: 1.02rem; letter-spacing: -.01em; white-space: nowrap; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--primary); display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 7px 6px; }
+  .logo i { border-radius: 2px; }
+  .tabs { display: flex; gap: 4px; margin-left: 6px; }
+  .tab { border: 0; background: none; padding: 7px 12px; border-radius: 999px; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .tab:hover { color: var(--ink); background: var(--sunk); }
+  .tab[aria-current="page"] { color: var(--ink); background: var(--sunk); box-shadow: inset 0 0 0 1px var(--line); }
+  .tab .dot { width: 8px; height: 8px; }
+  .search { margin-left: auto; position: relative; flex: 0 1 260px; min-width: 0; }
+  .search input { width: 100%; border: 1px solid var(--line); background: var(--sunk); border-radius: 999px; padding: 8px 14px 8px 36px; }
+  .search input:focus { outline: none; border-color: var(--focus); background: var(--surface); }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 16px; height: 16px; }
+  .subnav { display: none; }
+  @media (max-width: 900px) {
+    .tabs { display: none; }
+    .subnav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .subnav::-webkit-scrollbar { display: none; }
+    .search { flex: 1 1 auto; }
+    .brand .txt { display: none; }
+  }
+
+  /* botões e chips */
+  .btn { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px; padding: 9px 16px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+  .btn.primary:hover { opacity: .9; }
+  .btn.ghost { border-color: transparent; background: transparent; }
+  .btn.ghost:hover { background: var(--sunk); }
+  .btn.sm { padding: 6px 12px; font-size: .88rem; }
+  .btn.icon { padding: 8px; }
+  .btn[disabled] { opacity: .4; cursor: default; pointer-events: none; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: .76rem; font-weight: 600; border-radius: 999px; padding: 2px 9px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+  .chip.facil { color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); background: var(--good-soft); }
+  .chip.dificil { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 35%, var(--line)); background: var(--bad-soft); }
+  .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; display: inline-block; background: var(--mc, var(--muted)); }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .seg button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: .86rem; font-weight: 500; }
+  .seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+
+  /* estrutura */
+  main.inner { padding-block: 22px 200px; display: flex; flex-direction: column; gap: 18px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+  .pad { padding: 20px 22px; }
+  @media (max-width: 560px) { .pad { padding: 16px; } }
+  h1, h2, h3 { margin: 0; letter-spacing: -.015em; text-wrap: balance; }
+  h1 { font-size: 1.7rem; font-weight: 700; }
+  h2 { font-size: 1.2rem; font-weight: 700; }
+  h3 { font-size: 1rem; font-weight: 600; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .sm { font-size: .87rem; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .between { justify-content: space-between; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .88rem; color: var(--muted); }
+  .crumbs button { border: 0; background: none; padding: 0; color: var(--muted); font-weight: 500; }
+  .crumbs button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .num { font-family: var(--f-code); font-variant-numeric: tabular-nums; }
+
+  /* progresso */
+  .bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; display: flex; }
+  .bar i { display: block; height: 100%; }
+  .bar .ok { background: var(--good); } .bar .ko { background: var(--bad); }
+  .mix { height: 6px; border-radius: 99px; overflow: hidden; display: flex; gap: 2px; }
+  .mix i { display: block; height: 100%; border-radius: 2px; }
+  .ring { --p: 0; --q: 0; width: 132px; height: 132px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: conic-gradient(var(--good) calc(var(--p) * 1%), var(--bad) 0 calc((var(--p) + var(--q)) * 1%), var(--line) 0); }
+  .ring > div { width: 104px; height: 104px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; text-align: center; line-height: 1.15; }
+  .ring b { font-size: 1.6rem; font-family: var(--f-code); }
+
+  /* início */
+  .hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: center; }
+  @media (max-width: 620px) { .hero { grid-template-columns: minmax(0, 1fr); justify-items: start; } }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .stat { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; }
+  .stat b { display: block; font-size: 1.35rem; font-family: var(--f-code); line-height: 1.2; }
+  .stat button { border: 0; background: none; padding: 0; text-align: left; width: 100%; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .mcard { overflow: hidden; display: flex; flex-direction: column; }
+  .mcard .band { background: color-mix(in srgb, var(--mc) 13%, var(--surface)); border-bottom: 1px solid color-mix(in srgb, var(--mc) 25%, var(--line)); padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .mcard .band h2 { display: flex; align-items: center; gap: 10px; }
+  .mcard .band .num { font-size: 1.5rem; font-weight: 500; }
+  .mcard .body { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .toplist { display: flex; flex-direction: column; }
+  .toplist button { display: grid; grid-template-columns: 10px minmax(0, 1fr) 110px auto; gap: 12px; align-items: center; border: 0; background: none; padding: 9px 4px; text-align: left; border-top: 1px solid var(--line); }
+  .toplist button:first-child { border-top: 0; }
+  .toplist button:hover { background: var(--sunk); }
+  @media (max-width: 520px) { .toplist button { grid-template-columns: 10px minmax(0, 1fr) auto; } .toplist .bar { display: none; } }
+
+  /* cabeçalho de matéria/tópico */
+  .head { overflow: hidden; }
+  .head .band { background: color-mix(in srgb, var(--mc, var(--muted)) 11%, var(--surface)); padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--line); }
+  .head .band h1 { display: flex; align-items: center; gap: 12px; }
+  .head .band .dot { width: 14px; height: 14px; border-radius: 4px; }
+  .head .meta { padding: 14px 22px; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; }
+  .head .meta .kv b { font-family: var(--f-code); font-size: 1.05rem; margin-right: 4px; }
+  @media (max-width: 560px) { .head .band, .head .meta { padding-left: 16px; padding-right: 16px; } }
+
+  /* cartões de tópico */
+  .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .tcard { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; box-shadow: var(--shadow); }
+  .tcard:hover { border-color: var(--mc, var(--line-strong)); }
+  .tcard .desc { color: var(--muted); font-size: .84rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+  .tcard .foot { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); }
+  .tcard.inter { background: var(--sunk); border-style: dashed; }
+
+  /* filtros */
+  .filters { display: flex; flex-direction: column; gap: 12px; }
+  .filters .grp { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .filters .lab { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; width: 92px; }
+  .badge { background: var(--focus); color: #fff; border-radius: 999px; font-size: .72rem; padding: 0 7px; font-weight: 700; }
+
+  /* lista de questões */
+  .qlist { list-style: none; margin: 0; padding: 0; }
+  .qlist li + li { border-top: 1px solid var(--line); }
+  .qrow { width: 100%; display: grid; grid-template-columns: 28px 86px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; border: 0; background: none; padding: 12px 18px; }
+  .qrow:hover { background: var(--sunk); }
+  .qrow .code { font-family: var(--f-code); font-size: .8rem; color: var(--muted); }
+  .qrow .sub { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .qrow .sub small { display: block; color: var(--muted); font-size: .78rem; }
+  .qrow .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  @media (max-width: 620px) { .qrow { grid-template-columns: 26px minmax(0, 1fr); padding: 12px 14px; } .qrow .code { grid-column: 2; order: -1; } .qrow .chips { grid-column: 2; justify-content: flex-start; } }
+  .st { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line-strong); color: var(--muted); }
+  .st svg { width: 14px; height: 14px; stroke-width: 3; }
+  .st.ok { background: var(--good); border-color: var(--good); color: var(--surface); }
+  .st.ko { background: var(--bad); border-color: var(--bad); color: var(--surface); }
+  .empty { padding: 36px 20px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+
+  /* questão */
+  .qwrap { max-width: 820px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .qtop { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+  .timer { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-code); font-size: .9rem; color: var(--muted); padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+  .paper { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+  .paper .phead { padding: 14px 22px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; background: color-mix(in srgb, var(--mc, var(--muted)) 8%, var(--surface)); }
+  .paper .phead .qn { font-family: var(--f-code); font-weight: 500; }
+  .paper .pbody { padding: 22px 26px 26px; display: flex; flex-direction: column; gap: 16px; }
+  @media (max-width: 560px) { .paper .phead { padding: 12px 16px; } .paper .pbody { padding: 18px 16px 20px; } }
+  .note { font-size: .86rem; padding: 9px 12px; border-radius: var(--r-sm); background: var(--sunk); border: 1px dashed var(--line-strong); color: var(--muted); }
+  .qtext { font-family: var(--f-text); font-size: 1.08rem; line-height: 1.7; overflow-wrap: anywhere; }
+  .qtext p { margin: 0 0 .85em; }
+  .qtext img { display: block; max-width: 100%; height: auto; margin: 12px auto; border-radius: 6px; background: #fff; padding: 4px; }
+  .qtext table { border-collapse: collapse; display: block; overflow-x: auto; max-width: 100%; font-family: var(--f-ui); font-size: .92rem; }
+  .qtext td, .qtext th { border: 1px solid var(--line); padding: 4px 8px; }
+  .qtext a { color: var(--focus); }
+  .qtext strong { font-weight: 600; }
+  .intro { font-family: var(--f-text); font-weight: 600; font-size: 1.08rem; line-height: 1.6; }
+  .alts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .alt { display: grid; grid-template-columns: 36px minmax(0, 1fr) 34px; align-items: start; gap: 12px; border: 1.5px solid var(--line); border-radius: var(--r-sm); background: var(--surface); padding: 10px 8px 10px 12px; }
+  .alt .pick { display: contents; }
+  .alt .l { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--line-strong); display: grid; place-items: center; font-weight: 700; font-size: .92rem; background: var(--surface); border-style: solid; padding: 0; }
+  .alt .t { border: 0; background: none; padding: 5px 0 0; text-align: left; font-family: var(--f-text); font-size: 1.02rem; line-height: 1.55; min-width: 0; overflow-wrap: anywhere; }
+  .alt .t img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; padding: 3px; }
+  .alt .t p { margin: 0; }
+  .alt .x { border: 0; background: none; color: var(--muted); padding: 6px; border-radius: 8px; align-self: center; }
+  .alt .x:hover { background: var(--sunk); color: var(--ink); }
+  .alt:hover { border-color: var(--line-strong); }
+  .alt.sel { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent); }
+  .alt.sel .l { background: var(--focus); border-color: var(--focus); color: #fff; }
+  .alt.cut .t { text-decoration: line-through; color: var(--muted); opacity: .6; }
+  .alt.cut .l { opacity: .5; }
+  .alt.right { border-color: var(--good); background: var(--good-soft); }
+  .alt.right .l { background: var(--good); border-color: var(--good); color: var(--surface); }
+  .alt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+  .alt.wrong .l { background: var(--bad); border-color: var(--bad); color: var(--surface); }
+  .alts.done .alt .x { visibility: hidden; }
+  .fb { border-radius: var(--r-sm); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border: 1.5px solid; }
+  .fb.ok { background: var(--good-soft); border-color: var(--good); }
+  .fb.ko { background: var(--bad-soft); border-color: var(--bad); }
+  .fb .big { font-size: 1.12rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .actionbar .inner { max-width: 820px; display: flex; align-items: center; gap: 8px; padding-block: 10px; }
+  .actionbar .grow { flex: 1; }
+  .mark[aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
+  .mark[aria-pressed="true"] svg { fill: currentColor; }
+  .kbd { font-family: var(--f-code); font-size: .72rem; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--muted); }
+  .skel { background: linear-gradient(90deg, var(--sunk), var(--line), var(--sunk)); background-size: 200% 100%; border-radius: 8px; min-height: 16px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .skel { animation: sh 1.2s linear infinite; }
+    @keyframes sh { to { background-position: -200% 0; } }
+    .alt, .btn, .tcard, .qrow, .tab, .toplist button { transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease, opacity .12s ease; }
+    .view { animation: in .18s ease-out; }
+    @keyframes in { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  }
+  footer { padding-block: 0 40px; }
+
+  /* Raio-X da prova */
+  .rx-toc { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rx-toc button { border: 1px solid var(--line); background: var(--sunk); border-radius: 999px; padding: 4px 11px; font-size: .82rem; font-weight: 500; color: var(--muted); }
+  .rx-toc button:hover { color: var(--ink); border-color: var(--line-strong); }
+  .rx-sec { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 120px); }
+  .rx-sec > p { max-width: 72ch; }
+  .rx-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .rx-tile { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .rx-tile .v { font-family: var(--f-code); font-size: 1.7rem; line-height: 1.1; }
+  .rx-tile .k { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .rx-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .82rem; color: var(--muted); }
+  .rx-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .rx-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .rx-chart { position: relative; width: 100%; min-height: 120px; }
+  .rx-chart svg { display: block; overflow: visible; }
+  .rx-chart text { fill: var(--muted); font-size: 11px; font-family: var(--f-ui); font-variant-numeric: tabular-nums; }
+  .rx-chart text.strong { fill: var(--ink); }
+  .rx-chart .grid line { stroke: var(--line); }
+  .rx-chart .ref { stroke: var(--line-strong); stroke-dasharray: 3 3; }
+  .rx-chart .clk { cursor: pointer; }
+  .rx-scroll { overflow-x: auto; }
+  .rx-tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow); border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.45; min-width: 150px; z-index: 5; }
+  .rx-tip .k { color: var(--muted); }
+  .rx-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .rx-two > * { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .rx-call { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .rx-call > div { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; }
+  .rx-call .v { font-family: var(--f-code); font-size: 1.8rem; line-height: 1.1; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-sm); }
+  .tbl { border-collapse: collapse; width: 100%; font-size: .86rem; font-variant-numeric: tabular-nums; }
+  .tbl th, .tbl td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .tbl th:first-child, .tbl td:first-child, .tbl .l { text-align: left; }
+  .tbl th { color: var(--muted); font-weight: 600; background: var(--sunk); }
+  .tbl th[data-sort] { cursor: pointer; }
+  .tbl tbody tr:last-child td { border-bottom: 0; }
+  .tbl tbody tr.clk { cursor: pointer; }
+  .tbl tbody tr.clk:hover { background: var(--sunk); }
+  .rx-notes summary { cursor: pointer; font-weight: 600; }
+  .rx-notes ul { margin: 10px 0 0; padding-left: 1.2em; line-height: 1.6; max-width: 76ch; color: var(--muted); }
+</style>
+
+</head>
+<body>
+<header class="appbar">
+  <div class="inner gutter">
+    <button class="brand" id="brand" type="button" aria-label="Início">
+      <span class="logo" aria-hidden="true"><i style="background: var(--bio)"></i><i style="background: var(--fis)"></i><i style="background: var(--qui)"></i></span>
+      <span class="txt">Banco ENEM Natureza</span>
+    </button>
+    <nav class="tabs" aria-label="Matérias">
+      <button class="tab" type="button" data-go="inicio">Início</button>
+      <button class="tab" type="button" data-go="m-biologia"><span class="dot" style="--mc: var(--bio)"></span>Biologia</button>
+      <button class="tab" type="button" data-go="m-fisica"><span class="dot" style="--mc: var(--fis)"></span>Física</button>
+      <button class="tab" type="button" data-go="m-quimica"><span class="dot" style="--mc: var(--qui)"></span>Química</button>
+      <button class="tab" type="button" data-go="revisar">Revisar</button>
+      <button class="tab" type="button" data-go="raiox">Raio-X da prova</button>
+    </nav>
+    <form class="search" id="busca-form" role="search">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="busca" type="search" placeholder="Buscar assunto (ex.: eletrólise)" aria-label="Buscar questões por assunto" autocomplete="off">
+    </form>
+    <span class="net" id="net" role="status">…</span>
+    <button class="btn primary sm" id="sortear-topo" type="button" title="Sortear uma questão (N)">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>
+      <span>Sortear</span>
+    </button>
+  </div>
+  <div class="inner gutter subnav" aria-label="Matérias">
+    <button class="tab" type="button" data-go="inicio">Início</button>
+    <button class="tab" type="button" data-go="m-biologia"><span class="dot" style="--mc: var(--bio)"></span>Biologia</button>
+    <button class="tab" type="button" data-go="m-fisica"><span class="dot" style="--mc: var(--fis)"></span>Física</button>
+    <button class="tab" type="button" data-go="m-quimica"><span class="dot" style="--mc: var(--qui)"></span>Química</button>
+    <button class="tab" type="button" data-go="revisar">Revisar</button>
+    <button class="tab" type="button" data-go="raiox">Raio-X</button>
+  </div>
+</header>
+
+<main class="inner gutter" id="main" aria-live="polite">
+  <div class="card pad stack" aria-busy="true">
+    <div class="skel" style="width: 40%; height: 26px"></div>
+    <div class="skel" style="width: 75%"></div>
+    <div class="skel" style="width: 60%"></div>
+  </div>
+</main>
+<div class="actionbar gutter" id="actionbar" hidden></div>
+<footer class="inner gutter"><p class="muted sm" id="rodape"></p></footer>
+
+<script>
+(function () {
+  'use strict';
+  // ---------- ícones (texto fixo) ----------
+  const ICON = {
+    check: '<path d="M20 6 9 17l-5-5"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+    shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
+    bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    filter: '<path d="M3 5h18l-7 8v6l-4-2v-4z"/>', strike: '<path d="M5 12h14"/><path d="M16 6a4 4 0 0 0-4-2c-2.5 0-4 1.4-4 3"/><path d="M8 18a4 4 0 0 0 4 2c2.5 0 4-1.4 4-3"/>',
+    play: '<path d="M7 4v16l13-8z"/>', back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  };
+  const ic = (n) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('class', 'i'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true'); s.innerHTML = ICON[n]; return s; };
+
+  // ---------- estado ----------
+  const COR = { biologia: 'var(--bio)', fisica: 'var(--fis)', quimica: 'var(--qui)' };
+  const ORD = ['biologia', 'fisica', 'quimica'];
+  let META = null, QS = [], BY = new Map();
+  const IMGS = new Map();
+  const P = { respostas: {}, marcadas: {} };
+  let gravar = null, aviso = '';
+  const F = { dif: 'todas', conta: 'todas', status: 'todas', periodo: 'todos' };
+  const S = { view: 'inicio', escopo: { tipo: 'tudo' }, lista: [], revisar: 'erradas', termo: '', filtrosAbertos: false, timer: null, qid: null, acao: null };
+
+  const $ = (s) => document.querySelector(s);
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else if (k === 'style') e.setAttribute('style', v);
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v);
+    }
+    kids.flat().forEach((c) => { if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  const nomeM = (m) => META.materias[m];
+  const topo = (m, t) => META.topicos[m].find((x) => x.id === t) || { nome: t, desc: '' };
+  const faixa = (n) => n == null ? null : n < 600 ? 'facil' : n < 700 ? 'media' : 'dificil';
+  const ROT = { facil: 'Fácil', media: 'Média', dificil: 'Difícil' };
+  const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
+  const norm = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const resp = (id) => P.respostas[id];
+  const marcada = (id) => !!P.marcadas[id];
+
+  // ---------- escopos e filtros ----------
+  function passa(q) {
+    if (F.dif !== 'todas' && faixa(q.nivel) !== F.dif) return false;
+    if (F.conta === 'com' && !q.conta) return false;
+    if (F.conta === 'sem' && q.conta) return false;
+    if (F.periodo === 'antigo' && q.ano > 2016) return false;
+    if (F.periodo === 'recente' && q.ano < 2017) return false;
+    const r = resp(q.id);
+    if (F.status === 'nao' && r) return false;
+    if (F.status === 'erradas' && !(r && !r.ok)) return false;
+    if (F.status === 'certas' && !(r && r.ok)) return false;
+    return true;
+  }
+  const nFiltros = () => ['dif', 'conta', 'status'].filter((k) => F[k] !== 'todas').length + (F.periodo !== 'todos' ? 1 : 0);
+  function doEscopo(e) {
+    switch (e.tipo) {
+      case 'materia': return QS.filter((q) => q.m === e.m || q.s === e.m);
+      case 'topico': return QS.filter((q) => q.m === e.m && q.t === e.t);
+      case 'inter': return QS.filter((q) => q.s === e.m);
+      case 'erradas': return QS.filter((q) => resp(q.id) && !resp(q.id).ok);
+      case 'marcadas': return QS.filter((q) => marcada(q.id));
+      case 'busca': { const t = norm(e.termo).split(/\s+/).filter(Boolean); return t.length ? QS.filter((q) => t.every((w) => q._b.includes(w))) : []; }
+      default: return QS.slice();
+    }
+  }
+  const ordena = (l) => l.sort((a, b) => a.ano - b.ano || a.n - b.n);
+  function titulo(e) {
+    return { materia: () => nomeM(e.m), topico: () => topo(e.m, e.t).nome, inter: () => `De outras matérias, envolvendo ${nomeM(e.m)}`,
+      erradas: () => 'Questões que você errou', marcadas: () => 'Marcadas para revisar', busca: () => `Busca: “${e.termo}”` }[e.tipo]?.() || 'Todas as questões';
+  }
+  function hashDe(e) {
+    return { materia: 'm-' + e.m, topico: 't-' + e.m + '--' + (e.t || '').replace(/_/g, '-'), inter: 'i-' + e.m, erradas: 'revisar', marcadas: 'revisar', busca: 'busca' }[e.tipo] || 'inicio';
+  }
+  function estat(l) { let f = 0, c = 0; l.forEach((q) => { const r = resp(q.id); if (r) { f++; if (r.ok) c++; } }); return { total: l.length, feitas: f, certas: c }; }
+  function barra(s, label) {
+    const b = el('div', { class: 'bar', role: 'img', 'aria-label': label || `${s.feitas} de ${s.total} feitas, ${s.certas} certas` });
+    if (s.total) { b.append(el('i', { class: 'ok', style: `width:${100 * s.certas / s.total}%` }), el('i', { class: 'ko', style: `width:${100 * (s.feitas - s.certas) / s.total}%` })); }
+    return b;
+  }
+  function mixDif(l) {
+    const c = { facil: 0, media: 0, dificil: 0 }; l.forEach((q) => { const f = faixa(q.nivel); if (f) c[f]++; });
+    const t = c.facil + c.media + c.dificil || 1;
+    return el('div', { class: 'mix', role: 'img', 'aria-label': `${c.facil} fáceis, ${c.media} médias, ${c.dificil} difíceis` },
+      el('i', { style: `width:${100 * c.facil / t}%;background:var(--good)` }), el('i', { style: `width:${100 * c.media / t}%;background:var(--gold)` }), el('i', { style: `width:${100 * c.dificil / t}%;background:var(--bad)` }));
+  }
+  function chipsQ(q, ctxM) {
+    const f = faixa(q.nivel);
+    return [f ? el('span', { class: 'chip ' + f, text: ROT[f] }) : null, q.conta ? el('span', { class: 'chip', text: 'conta' }) : null,
+      q.s && q.s !== ctxM ? el('span', { class: 'chip', text: '+ ' + nomeM(q.s) }) : null, q.s && q.s === ctxM ? el('span', { class: 'chip', text: 'de ' + nomeM(q.m) }) : null,
+      marcada(q.id) ? el('span', { class: 'chip', style: 'color:var(--gold)', text: '★ revisar' }) : null];
+  }
+
+  // ---------- navegação ----------
+  const ir = (h) => { if (location.hash.slice(1) === h) rota(); else location.hash = h; };
+  const vai = (e) => { if (e.tipo === 'erradas' || e.tipo === 'marcadas') S.revisar = e.tipo; ir(hashDe(e)); };
+  function abre(id, lista, escopo) { if (escopo) S.escopo = escopo; if (lista) S.lista = lista.map((q) => q.id); ir('q-' + id); }
+  function sortear(escopo, evitar) {
+    let l = doEscopo(escopo).filter(passa).filter((q) => q.id !== evitar);
+    if (!l.length) { telaVazia(escopo); return; }
+    if (F.status === 'todas') { const n = l.filter((q) => !resp(q.id)); if (n.length) l = n; }
+    const q = l[Math.floor(Math.random() * l.length)];
+    abre(q.id, ordena(doEscopo(escopo).filter(passa)), escopo);
+  }
+  function primeiraNaoFeita(escopo) {
+    const l = ordena(doEscopo(escopo).filter(passa));
+    const q = l.find((x) => !resp(x.id)) || l[0];
+    if (q) abre(q.id, l, escopo);
+  }
+  function marcaTabs() {
+    const h = S.view === 'questao' ? '' : location.hash.slice(1) || 'inicio';
+    const alvo = h.startsWith('t-') || h.startsWith('i-') ? 'm-' + (S.escopo.m || '') : h;
+    document.querySelectorAll('.tab[data-go]').forEach((b) => b.setAttribute('aria-current', b.dataset.go === alvo ? 'page' : 'false'));
+  }
+  function monta(...nodes) { const m = $('#main'); m.replaceChildren(el('div', { class: 'view stack', style: 'gap:18px' }, ...nodes)); }
+
+  // ---------- filtros ----------
+  function painelFiltros() {
+    const n = nFiltros();
+    const corpo = el('div', { class: 'filters', id: 'painel-filtros', hidden: !S.filtrosAbertos });
+    const grupo = (lab, k, ops) => el('div', { class: 'grp' }, el('span', { class: 'lab', text: lab }),
+      el('div', { class: 'seg', role: 'group', 'aria-label': lab }, ...ops.map(([v, t]) => el('button', { type: 'button', 'aria-pressed': String(F[k] === v), onclick: () => { F[k] = v; rota(); } }, t))));
+    corpo.append(
+      grupo('Dificuldade', 'dif', [['todas', 'Todas'], ['facil', 'Fácil < 600'], ['media', 'Média 600–700'], ['dificil', 'Difícil ≥ 700']]),
+      grupo('Conta', 'conta', [['todas', 'Todas'], ['com', 'Com conta'], ['sem', 'Sem conta']]),
+      grupo('Situação', 'status', [['todas', 'Todas'], ['nao', 'Não feitas'], ['erradas', 'Errei'], ['certas', 'Acertei']]),
+      grupo('Período', 'periodo', [['todos', '2009–2023'], ['antigo', '2009–2016'], ['recente', '2017–2023']]));
+    const btn = el('button', { class: 'btn sm', type: 'button', 'aria-expanded': String(S.filtrosAbertos), 'aria-controls': 'painel-filtros',
+      onclick: () => { S.filtrosAbertos = !S.filtrosAbertos; corpo.hidden = !S.filtrosAbertos; btn.setAttribute('aria-expanded', String(S.filtrosAbertos)); } },
+      ic('filter'), 'Filtros', n ? el('span', { class: 'badge', text: n }) : null);
+    const limpar = n ? el('button', { class: 'btn ghost sm', type: 'button', onclick: () => { Object.assign(F, { dif: 'todas', conta: 'todas', status: 'todas', periodo: 'todos' }); rota(); } }, 'Limpar filtros') : null;
+    return el('div', { class: 'card pad stack', style: 'padding-block:12px' }, el('div', { class: 'row between' }, el('div', { class: 'row' }, btn, limpar),
+      el('span', { class: 'muted sm', text: n ? 'Os filtros valem para listas, contagens e sorteios.' : 'Sem filtros: mostrando todas as questões.' })), corpo);
+  }
+
+  // ---------- telas ----------
+  function telaInicio() {
+    S.view = 'inicio'; S.escopo = { tipo: 'tudo' };
+    const s = estat(QS), err = doEscopo({ tipo: 'erradas' }).length, marc = doEscopo({ tipo: 'marcadas' }).length;
+    const ring = el('div', { class: 'ring', style: `--p:${100 * s.certas / QS.length};--q:${100 * (s.feitas - s.certas) / QS.length}`, role: 'img', 'aria-label': `${s.feitas} de ${QS.length} questões feitas` },
+      el('div', {}, el('div', {}, el('b', { text: s.feitas }), el('div', { class: 'muted sm', text: `de ${QS.length}` }))));
+    const hero = el('section', { class: 'card pad hero', 'aria-label': 'Seu progresso' }, ring,
+      el('div', { class: 'stack' },
+        el('h1', { text: s.feitas ? 'Continue de onde parou' : 'Comece a treinar Natureza' }),
+        el('p', { class: 'muted', text: `${QS.length} questões das provas regulares de 2009 a 2023, separadas por matéria e tópico. As interdisciplinares aparecem nas duas matérias.` }),
+        el('div', { class: 'stats' },
+          el('div', { class: 'stat' }, el('b', { text: s.feitas ? pct(s.certas, s.feitas) + '%' : '—' }), el('span', { class: 'muted sm', text: 'de acerto' })),
+          el('div', { class: 'stat' }, el('button', { type: 'button', onclick: () => vai({ tipo: 'erradas' }) }, el('b', { text: err }), el('span', { class: 'muted sm', text: 'erradas para revisar →' }))),
+          el('div', { class: 'stat' }, el('button', { type: 'button', onclick: () => vai({ tipo: 'marcadas' }) }, el('b', { text: marc }), el('span', { class: 'muted sm', text: 'marcadas ★ →' })))),
+        el('div', { class: 'row' },
+          el('button', { class: 'btn primary', type: 'button', onclick: () => sortear({ tipo: 'tudo' }) }, ic('shuffle'), 'Sortear questão'),
+          err ? el('button', { class: 'btn', type: 'button', onclick: () => primeiraNaoFeita({ tipo: 'erradas' }) }, 'Refazer erradas') : null,
+          el('button', { class: 'btn', type: 'button', onclick: () => ir('raiox') }, 'Raio-X da prova', ic('right')))));
+    const cards = el('div', { class: 'grid3' }, ...ORD.map((m) => {
+      const l = doEscopo({ tipo: 'materia', m }), st = estat(l), prin = QS.filter((q) => q.m === m).length;
+      const tops = META.topicos[m].map((t) => ({ t, n: QS.filter((q) => q.m === m && q.t === t.id).length })).sort((a, b) => b.n - a.n).slice(0, 3);
+      return el('article', { class: 'card mcard', style: `--mc:${COR[m]}` },
+        el('div', { class: 'band' }, el('h2', {}, el('span', { class: 'dot' }), nomeM(m)), el('span', { class: 'num', text: l.length })),
+        el('div', { class: 'body' },
+          el('p', { class: 'muted sm', text: `${prin} da matéria + ${l.length - prin} interdisciplinares` }),
+          barra(st), el('p', { class: 'sm', text: st.feitas ? `${st.feitas} feitas · ${pct(st.certas, st.feitas)}% de acerto` : 'Nenhuma feita ainda' }),
+          el('p', { class: 'muted sm', text: 'Mais cobrados: ' + tops.map((x) => x.t.nome).join(', ') }),
+          el('div', { class: 'row', style: 'margin-top:auto' },
+            el('button', { class: 'btn primary sm', type: 'button', onclick: () => sortear({ tipo: 'materia', m }) }, ic('shuffle'), 'Sortear'),
+            el('button', { class: 'btn sm', type: 'button', onclick: () => vai({ tipo: 'materia', m }) }, 'Ver tópicos', ic('right')))));
+    }));
+    const todos = [];
+    ORD.forEach((m) => META.topicos[m].forEach((t) => { const l = doEscopo({ tipo: 'topico', m, t: t.id }); if (l.length) todos.push({ m, t, l }); }));
+    todos.sort((a, b) => b.l.length - a.l.length);
+    const top = el('section', { class: 'card pad stack', 'aria-label': 'Tópicos que mais caem' },
+      el('div', { class: 'row between' }, el('h2', { text: 'Os tópicos que mais caem' }), el('span', { class: 'muted sm', text: 'questões · progresso' })),
+      el('div', { class: 'toplist' }, ...todos.slice(0, 10).map(({ m, t, l }) => {
+        const st = estat(l);
+        return el('button', { type: 'button', style: `--mc:${COR[m]}`, onclick: () => vai({ tipo: 'topico', m, t: t.id }) },
+          el('span', { class: 'dot' }), el('span', {}, el('b', { text: t.nome }), el('span', { class: 'muted sm', text: ' · ' + nomeM(m) })),
+          barra(st), el('span', { class: 'num sm', text: `${st.feitas}/${l.length}` }));
+      })));
+    const msgBackup = el('p', { class: 'muted sm', 'aria-live': 'polite' });
+    const entrada = el('input', { type: 'file', accept: 'application/json,.json', 'aria-label': 'Escolher arquivo de backup' });
+    entrada.addEventListener('change', () => { if (entrada.files[0]) importar(entrada.files[0], msgBackup); entrada.value = ''; });
+    const aparelho = el('section', { class: 'card pad stack', 'aria-label': 'Neste aparelho' },
+      el('h2', { text: 'Neste aparelho' }),
+      el('p', { id: 'off-status', class: 'muted', text: textoOffline() }),
+      el('p', { class: 'sm', text: 'Seu progresso, as questões marcadas e os rascunhos ficam salvos só neste aparelho. Faça um backup de vez em quando: se o app for removido, os dados vão junto.' }),
+      el('div', { class: 'row' },
+        el('button', { class: 'btn sm', type: 'button', onclick: exportar }, 'Exportar backup do progresso'),
+        el('span', { class: 'btn sm arquivo' }, 'Importar backup', entrada)),
+      msgBackup);
+    monta(hero, painelFiltros(), cards, top, aparelho,
+      el('p', { class: 'muted sm' }, 'Atalhos: ', el('span', { class: 'kbd', text: 'A–E' }), ' escolhe, ', el('span', { class: 'kbd', text: 'Enter' }), ' confirma, ', el('span', { class: 'kbd', text: 'N' }), ' sorteia, ', el('span', { class: 'kbd', text: '←' }), el('span', { class: 'kbd', text: '→' }), ' navega, ', el('span', { class: 'kbd', text: '/' }), ' busca.'));
+  }
+
+  function cabecalho(escopo, todas, extra) {
+    const st = estat(todas), m = escopo.m;
+    const crumbs = el('div', { class: 'crumbs' }, el('button', { type: 'button', onclick: () => ir('inicio') }, 'Início'));
+    if (escopo.tipo === 'topico' || escopo.tipo === 'inter') crumbs.append('›', el('button', { type: 'button', onclick: () => vai({ tipo: 'materia', m }) }, nomeM(m)));
+    let desc = '';
+    if (escopo.tipo === 'topico') desc = topo(m, escopo.t).desc;
+    else if (escopo.tipo === 'inter') desc = `Questões classificadas em outra matéria que também cobram ${nomeM(m)}.`;
+    else if (escopo.tipo === 'erradas') desc = 'Refaça as questões que você errou até acertar. Ao acertar, ela sai desta lista.';
+    else if (escopo.tipo === 'marcadas') desc = 'Questões que você marcou com ★ para rever com calma.';
+    else if (escopo.tipo === 'busca') desc = 'Busca no assunto, no tópico e no texto das questões.';
+    const conta = todas.filter((q) => q.conta).length;
+    return el('section', { class: 'card head', style: m ? `--mc:${COR[m]}` : '' },
+      el('div', { class: 'band' }, crumbs, el('h1', {}, m ? el('span', { class: 'dot' }) : null, titulo(escopo)), desc ? el('p', { class: 'muted', text: desc }) : null,
+        el('div', { class: 'row' }, ...(extra || []))),
+      el('div', { class: 'meta' },
+        el('span', { class: 'kv' }, el('b', { text: todas.length }), el('span', { class: 'muted', text: 'questões' })),
+        el('span', { class: 'kv' }, el('b', { text: st.feitas }), el('span', { class: 'muted', text: 'feitas' })),
+        el('span', { class: 'kv' }, el('b', { text: st.feitas ? pct(st.certas, st.feitas) + '%' : '—' }), el('span', { class: 'muted', text: 'de acerto' })),
+        el('span', { class: 'kv' }, el('b', { text: pct(conta, todas.length) + '%' }), el('span', { class: 'muted', text: 'com conta' })),
+        el('div', { style: 'flex:1;min-width:160px' }, barra(st))));
+  }
+
+  function telaMateria(m) {
+    S.view = 'lista'; S.escopo = { tipo: 'materia', m };
+    const todas = doEscopo(S.escopo);
+    const tops = META.topicos[m].map((t) => ({ t, l: doEscopo({ tipo: 'topico', m, t: t.id }) })).filter((x) => x.l.length).sort((a, b) => b.l.length - a.l.length);
+    const inter = doEscopo({ tipo: 'inter', m });
+    const grid = el('div', { class: 'tgrid' }, ...tops.map(({ t, l }) => {
+      const st = estat(l), lf = l.filter(passa).length;
+      return el('button', { class: 'tcard', type: 'button', style: `--mc:${COR[m]}`, onclick: () => vai({ tipo: 'topico', m, t: t.id }) },
+        el('div', { class: 'row between' }, el('h3', { text: t.nome }), el('span', { class: 'num sm muted', text: nFiltros() ? `${lf}/${l.length}` : l.length })),
+        el('p', { class: 'desc', text: t.desc }), mixDif(l), barra(st),
+        el('div', { class: 'foot' }, el('span', { text: st.feitas ? `${st.feitas} feitas · ${pct(st.certas, st.feitas)}%` : 'não iniciado' }), el('span', { text: `${pct(l.filter((q) => q.conta).length, l.length)}% com conta` })));
+    }));
+    if (inter.length) {
+      const st = estat(inter);
+      grid.append(el('button', { class: 'tcard inter', type: 'button', style: `--mc:${COR[m]}`, onclick: () => vai({ tipo: 'inter', m }) },
+        el('div', { class: 'row between' }, el('h3', { text: 'De outras matérias' }), el('span', { class: 'num sm muted', text: inter.length })),
+        el('p', { class: 'desc', text: `Interdisciplinares de ${ORD.filter((x) => x !== m).map(nomeM).join(' e ')} que também cobram ${nomeM(m)}.` }), mixDif(inter), barra(st),
+        el('div', { class: 'foot' }, el('span', { text: st.feitas ? `${st.feitas} feitas` : 'não iniciado' }), el('span', {}))));
+    }
+    monta(cabecalho(S.escopo, todas, [
+      el('button', { class: 'btn primary', type: 'button', onclick: () => sortear(S.escopo) }, ic('shuffle'), `Sortear de ${nomeM(m)}`),
+      el('button', { class: 'btn', type: 'button', onclick: () => primeiraNaoFeita(S.escopo) }, ic('play'), 'Próxima não feita')]),
+      painelFiltros(),
+      el('div', { class: 'row between' }, el('h2', { text: 'Tópicos' }), el('span', { class: 'muted sm', text: 'barra colorida: fácil · média · difícil' })),
+      grid);
+  }
+
+  function telaLista(escopo) {
+    S.view = 'lista'; S.escopo = escopo;
+    const todas = doEscopo(escopo), lista = ordena(todas.filter(passa));
+    S.lista = lista.map((q) => q.id);
+    const extra = [
+      el('button', { class: 'btn primary', type: 'button', disabled: !lista.length, onclick: () => sortear(escopo) }, ic('shuffle'), 'Sortear daqui'),
+      el('button', { class: 'btn', type: 'button', disabled: !lista.length, onclick: () => primeiraNaoFeita(escopo) }, ic('play'), 'Próxima não feita')];
+    const nodes = [];
+    if (escopo.tipo === 'erradas' || escopo.tipo === 'marcadas') {
+      nodes.push(el('div', { class: 'seg', role: 'group', 'aria-label': 'Revisar' },
+        el('button', { type: 'button', 'aria-pressed': String(escopo.tipo === 'erradas'), onclick: () => { S.revisar = 'erradas'; rota(); } }, `Erradas (${doEscopo({ tipo: 'erradas' }).length})`),
+        el('button', { type: 'button', 'aria-pressed': String(escopo.tipo === 'marcadas'), onclick: () => { S.revisar = 'marcadas'; rota(); } }, `Marcadas ★ (${doEscopo({ tipo: 'marcadas' }).length})`)));
+    }
+    nodes.unshift(cabecalho(escopo, todas, extra));
+    nodes.push(painelFiltros());
+    if (!lista.length) {
+      const msg = { erradas: 'Nenhuma questão errada por enquanto. As que você errar aparecem aqui para refazer.',
+        marcadas: 'Nenhuma questão marcada. Use o botão ★ Revisar na questão para guardar as que quer rever.',
+        busca: 'Nada encontrado. Tente outra palavra, como "pilha", "genética" ou "empuxo".' }[escopo.tipo] || 'Nenhuma questão com os filtros atuais.';
+      nodes.push(el('div', { class: 'card empty' }, el('p', { text: msg }), nFiltros() ? el('button', { class: 'btn sm', type: 'button', onclick: () => { Object.assign(F, { dif: 'todas', conta: 'todas', status: 'todas', periodo: 'todos' }); rota(); } }, 'Limpar filtros') : null));
+    } else {
+      nodes.push(el('section', { class: 'card', 'aria-label': 'Questões' }, el('ul', { class: 'qlist' }, ...lista.map((q) => {
+        const r = resp(q.id);
+        return el('li', {}, el('button', { class: 'qrow', type: 'button', onclick: () => abre(q.id, lista, escopo) },
+          el('span', { class: 'st ' + (r ? (r.ok ? 'ok' : 'ko') : ''), 'aria-label': r ? (r.ok ? 'acertou' : 'errou') : 'não feita' }, r ? ic(r.ok ? 'check' : 'x') : null),
+          el('span', { class: 'code', text: `${q.ano} · Q${q.n}` }),
+          el('span', { class: 'sub' }, q.sub, escopo.tipo !== 'topico' ? el('small', { text: `${nomeM(q.m)} › ${topo(q.m, q.t).nome}` }) : null),
+          el('span', { class: 'chips' }, ...chipsQ(q, escopo.m))));
+      }))));
+    }
+    monta(...nodes);
+  }
+
+  function telaVazia(escopo) {
+    monta(el('div', { class: 'card empty' }, el('h2', { text: titulo(escopo) }), el('p', { class: 'muted', text: 'Nenhuma questão para sortear com os filtros atuais.' }),
+      el('button', { class: 'btn', type: 'button', onclick: () => { Object.assign(F, { dif: 'todas', conta: 'todas', status: 'todas', periodo: 'todos' }); sortear(escopo); } }, 'Limpar filtros e sortear')));
+  }
+
+  // ---------- questão ----------
+  // imagens são arquivos locais em img/AAAA/<chave>, guardados para uso offline
+  const imgUrl = (ano, k) => `img/${ano}/${encodeURIComponent(k)}`;
+  async function imagensDo(ano) {
+    return new Proxy({}, { get: (o, k) => typeof k === 'string' ? imgUrl(ano, k) : undefined });
+  }
+  const md = (t, imgs) => DOMPurify.sanitize(marked.parse(t.replace(/\(img:([^)\s]+)\)/g, (x, k) => '(' + (imgs[k] || '') + ')')));
+  const mdIn = (t) => DOMPurify.sanitize(marked.parseInline(t || ''));
+  const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  async function telaQuestao(id) {
+    const q = BY.get(id);
+    if (!q) { ir('inicio'); return; }
+    S.view = 'questao'; S.qid = id;
+    if (!S.lista.includes(id)) { S.escopo = S.escopo.tipo === 'busca' ? S.escopo : { tipo: 'topico', m: q.m, t: q.t }; S.lista = ordena(doEscopo(S.escopo).filter(passa)).map((x) => x.id); if (!S.lista.includes(id)) S.lista.push(id); }
+    monta(el('div', { class: 'qwrap' }, el('div', { class: 'card pad stack' }, el('div', { class: 'skel', style: 'width:30%;height:20px' }), el('div', { class: 'skel', style: 'height:120px' }), el('div', { class: 'skel', style: 'height:44px' }), el('div', { class: 'skel', style: 'height:44px' }))));
+    const imgs = await imagensDo(q.ano);
+    if (S.qid !== id || S.view !== 'questao') return;
+    const idx = S.lista.indexOf(id), f = faixa(q.nivel), ant = resp(id);
+    let escolha = null, cortadas = new Set(), feita = false, seg = 0;
+
+    // topo: voltar, posição, cronômetro
+    const timer = el('span', { class: 'timer', 'aria-label': 'Tempo nesta questão' }, ic('clock'), el('span', { text: '00:00' }));
+    clearInterval(S.timer);
+    S.timer = setInterval(() => { if (!feita) { seg++; timer.lastChild.textContent = mmss(seg); } }, 1000);
+    const qtop = el('div', { class: 'qtop' },
+      el('button', { class: 'btn ghost sm', type: 'button', onclick: () => ir(hashDe(S.escopo)) }, ic('back'), titulo(S.escopo)),
+      el('div', { class: 'row' }, el('span', { class: 'muted sm num', text: idx >= 0 ? `${idx + 1} de ${S.lista.length}` : '' }), timer));
+
+    // folha
+    const phead = el('div', { class: 'phead' },
+      el('span', { class: 'dot' }), el('b', { text: nomeM(q.m) }), el('span', { class: 'muted', text: '›' }),
+      el('button', { class: 'btn ghost sm', style: 'padding:2px 6px', type: 'button', onclick: () => vai({ tipo: 'topico', m: q.m, t: q.t }) }, topo(q.m, q.t).nome),
+      el('span', { style: 'flex:1' }), el('span', { class: 'qn', text: `ENEM ${q.ano} · Q${q.n}` }));
+    const chips = el('div', { class: 'row' },
+      f ? el('span', { class: 'chip ' + f, text: `${ROT[f]} · nível ${q.nivel}` }) : el('span', { class: 'chip', text: 'sem nível TRI' }),
+      q.conta ? el('span', { class: 'chip', text: 'com conta' }) : null, q.s ? el('span', { class: 'chip', text: 'também ' + nomeM(q.s) }) : null,
+      q.h ? el('span', { class: 'chip', title: 'Habilidade da Matriz de Referência', text: 'H' + q.h }) : null);
+    const notas = [];
+    if (q.anulada) notas.push(el('div', { class: 'note', text: 'Questão anulada pelo INEP: qualquer resposta foi considerada certa.' }));
+    else if (q.excluida) notas.push(el('div', { class: 'note', text: 'O INEP excluiu esta questão do cálculo da nota, mas o gabarito oficial vale normalmente.' }));
+    if (q.semtexto) notas.push(el('div', { class: 'note', text: 'O texto-base desta questão está incompleto na fonte. Pode faltar parte do enunciado.' }));
+    const corpo = el('div', { class: 'qtext' }); corpo.innerHTML = md(q.txt, imgs);
+    corpo.querySelectorAll('a').forEach((a) => { if (/^https?:\/\//.test(a.getAttribute('href') || '')) { a.target = '_blank'; a.rel = 'noopener'; } else a.removeAttribute('href'); });
+    corpo.querySelectorAll('img').forEach((im) => { im.loading = 'lazy'; im.addEventListener('error', () => im.replaceWith(el('div', { class: 'note', text: 'Imagem indisponível na fonte (enem.dev).' })), { once: true }); });
+    const intro = q.intro ? el('div', { class: 'intro' }) : null; if (intro) intro.innerHTML = mdIn(q.intro);
+
+    const ul = el('ul', { class: 'alts', 'aria-label': 'Alternativas' });
+    const itens = q.alts.map((a) => {
+      const t = el('button', { class: 't', type: 'button', 'aria-label': `Alternativa ${a.l}` }); t.innerHTML = mdIn(a.t);
+      const src = a.img ? imgs[a.img.slice(4)] : null; if (src) t.append(el('img', { src, alt: `Imagem da alternativa ${a.l}` }));
+      const l = el('button', { class: 'l', type: 'button', 'aria-label': `Escolher ${a.l}`, text: a.l });
+      const x = el('button', { class: 'x', type: 'button', title: 'Riscar alternativa', 'aria-label': `Riscar ${a.l}` }, ic('strike'));
+      const li = el('li', { class: 'alt', 'data-l': a.l }, l, t, x);
+      l.addEventListener('click', () => escolhe(a.l)); t.addEventListener('click', () => escolhe(a.l));
+      x.addEventListener('click', () => corta(a.l));
+      ul.append(li); return li;
+    });
+    const fb = el('div', { 'aria-live': 'polite' });
+    const paper = el('article', { class: 'paper', style: `--mc:${COR[q.m]}`, 'aria-label': `Questão ${q.n} do ENEM ${q.ano}` }, phead,
+      el('div', { class: 'pbody' }, chips, ...notas, corpo, intro, ul, fb));
+
+    // barra de ação
+    const bar = $('#actionbar');
+    const bPrev = el('button', { class: 'btn icon', type: 'button', title: 'Anterior (←)', 'aria-label': 'Questão anterior', disabled: idx <= 0, onclick: () => abre(S.lista[idx - 1]) }, ic('left'));
+    const bNext = el('button', { class: 'btn icon', type: 'button', title: 'Próxima (→)', 'aria-label': 'Próxima questão', disabled: idx < 0 || idx >= S.lista.length - 1, onclick: () => abre(S.lista[idx + 1]) }, ic('right'));
+    const bMark = el('button', { class: 'btn sm mark', type: 'button', 'aria-pressed': String(marcada(id)), title: 'Marcar para revisar depois', onclick: () => { const v = !marcada(id); P.marcadas[id] = v; bMark.setAttribute('aria-pressed', String(v)); salvarMarca(id, v); } }, ic('bookmark'), el('span', { class: 'lbl', text: 'Revisar' }));
+    const bOk = el('button', { class: 'btn primary', type: 'button', disabled: true, onclick: () => confirma() }, 'Confirmar resposta');
+    const bSort = el('button', { class: 'btn primary', type: 'button', hidden: true, onclick: () => sortear(S.escopo, id) }, ic('shuffle'), 'Sortear outra');
+    const bProx = el('button', { class: 'btn', type: 'button', hidden: true, disabled: idx < 0 || idx >= S.lista.length - 1, onclick: () => abre(S.lista[idx + 1]) }, 'Próxima', ic('right'));
+    bar.replaceChildren(Rascunho.barra(), el('div', { class: 'inner' }, bPrev, bNext, bMark, Rascunho.botaoLapis(), el('span', { class: 'grow' }), bOk, bProx, bSort));
+    bar.hidden = false;
+
+    function escolhe(l) {
+      if (feita) return;
+      escolha = l; cortadas.delete(l);
+      itens.forEach((li) => { li.classList.toggle('sel', li.dataset.l === l); if (li.dataset.l === l) li.classList.remove('cut'); });
+      bOk.disabled = false; bOk.textContent = `Confirmar ${l}`;
+    }
+    function corta(l) {
+      if (feita) return;
+      if (cortadas.has(l)) cortadas.delete(l); else cortadas.add(l);
+      itens.forEach((li) => li.classList.toggle('cut', cortadas.has(li.dataset.l)));
+      if (cortadas.has(escolha)) { escolha = null; itens.forEach((li) => li.classList.remove('sel')); bOk.disabled = true; bOk.textContent = 'Confirmar resposta'; }
+    }
+    function mostra(letra, tempo) {
+      feita = true; ul.classList.add('done');
+      const ok = q.anulada || letra === q.gab;
+      itens.forEach((li) => { li.classList.remove('sel'); const l = li.dataset.l; if (!q.anulada && l === q.gab) li.classList.add('right'); else if (l === letra && !ok) li.classList.add('wrong'); });
+      const dica = q.nivel == null ? '' : q.nivel < 600 ? 'Questão acessível: é das que mais pesam na TRI, vale garantir.' : q.nivel < 700 ? 'Dificuldade média.' : 'Questão difícil: errar esta pesa pouco para quem mira até 650 pontos.';
+      fb.className = 'fb ' + (ok ? 'ok' : 'ko');
+      fb.replaceChildren(
+        el('div', { class: 'big' }, ic(ok ? 'check' : 'x'), q.anulada ? 'Questão anulada' : ok ? `Certo! Resposta ${q.gab}` : `Você marcou ${letra}. A resposta é ${q.gab}.`),
+        el('div', { class: 'sm', text: `Assunto: ${q.sub}.${tempo ? ` Tempo: ${mmss(tempo)}.` : ''}` }),
+        dica ? el('div', { class: 'sm muted', text: dica }) : null,
+        el('div', { class: 'row', style: 'margin-top:4px' }, el('button', { class: 'btn ghost sm', type: 'button', onclick: refazer }, 'Refazer esta questão')));
+      bOk.hidden = true; bSort.hidden = false; bProx.hidden = false;
+    }
+    function confirma() {
+      if (feita || !escolha) return;
+      const ok = q.anulada || escolha === q.gab;
+      P.respostas[id] = { l: escolha, ok, t: Date.now(), s: seg };
+      mostra(escolha, seg);
+      salvarResp(id, P.respostas[id]);
+      setTimeout(() => fb.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 30);
+    }
+    function refazer() {
+      feita = false; escolha = null; cortadas = new Set(); seg = 0; timer.lastChild.textContent = '00:00';
+      ul.classList.remove('done'); itens.forEach((li) => li.classList.remove('right', 'wrong', 'sel', 'cut'));
+      fb.className = ''; fb.replaceChildren(); bOk.hidden = false; bOk.disabled = true; bOk.textContent = 'Confirmar resposta'; bSort.hidden = true; bProx.hidden = true;
+    }
+    S.acao = { escolhe, confirma, corta, prev: () => idx > 0 && abre(S.lista[idx - 1]), next: () => idx >= 0 && idx < S.lista.length - 1 && abre(S.lista[idx + 1]), feita: () => feita };
+    const folha = el('div', { class: 'folha', style: 'height:520px' }, el('span', { class: 'rot', text: 'Folha de rascunho' }));
+    const folhaBox = el('section', { class: 'stack', 'aria-label': 'Folha de rascunho' },
+      el('div', { class: 'row between' }, el('span', { class: 'muted sm', text: 'Toque no lápis para escrever na questão ou nesta folha. Dois dedos rolam a tela.' }),
+        el('button', { class: 'btn ghost sm', type: 'button', onclick: () => { folha.style.height = (folha.clientHeight + 400) + 'px'; } }, '+ Aumentar folha')),
+      folha);
+    monta(el('div', { class: 'qwrap' }, qtop, paper, folhaBox));
+    Rascunho.anexa(id, paper, folha);
+    if (ant) { mostra(ant.l, ant.s); }
+    window.scrollTo({ top: 0 });
+  }
+
+  // ---------- Raio-X da prova (análise de 2009–2025) ----------
+  const MK = { 'Biologia': 'biologia', 'Física': 'fisica', 'Química': 'quimica' };
+  const corN = (nome) => COR[MK[nome]] || 'var(--muted)';
+  const SER = ['var(--good)', 'var(--gold)', 'var(--bad)'];
+  const fmt = (v, d = 1) => (v == null || v === '' || isNaN(v)) ? '—' : (+v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  let RXDATA = null; const RXDRAW = []; let rxAno = '2023'; let rxOrd = { col: 'por_prova', desc: true };
+  const analise = () => RXDATA || (RXDATA = fetch('dados/analise.json').then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }).then((d) => d.tabelas));
+
+  function rxTip(box) {
+    let t = box.querySelector(':scope > .rx-tip');
+    if (!t) { t = el('div', { class: 'rx-tip', hidden: true }); box.append(t); }
+    return {
+      show(linhas, x, y) {
+        t.replaceChildren(...linhas.map(([k, v, b]) => el('div', {}, k ? el('span', { class: 'k', text: k + ' ' }) : null, el(b ? 'b' : 'span', { text: v }))));
+        t.hidden = false;
+        const w = Math.max(box.clientWidth, box.scrollWidth);
+        t.style.left = Math.max(0, Math.min(w - t.offsetWidth, x + 12)) + 'px';
+        t.style.top = Math.max(0, y - t.offsetHeight - 10) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  }
+  function rxHover(sel, box, linhas, onclick) {
+    const tt = rxTip(box);
+    sel.on('pointerenter pointermove', (ev, r) => { const [x, y] = d3.pointer(ev, box); tt.show(linhas(r), x, y); }).on('pointerleave', () => tt.hide());
+    if (onclick) sel.classed('clk', true).on('click', (ev, r) => onclick(r));
+  }
+  function rxSvg(box, W, H, label) {
+    box.replaceChildren();
+    return d3.select(box).append('svg').attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', label);
+  }
+  function rxLarg(svg, textos) { const g = svg.append('g'); let m = 0; textos.forEach((t) => { m = Math.max(m, g.append('text').text(t).node().getComputedTextLength()); }); g.remove(); return m; }
+  function chart(box, fn) { RXDRAW.push([box, fn]); return box; }
+  const legenda = (itens) => el('div', { class: 'rx-legend' }, ...itens.map(([c, t]) => el('span', {}, el('i', { style: `background:${c}` }), t)));
+  const legMat = () => legenda([['var(--bio)', 'Biologia'], ['var(--fis)', 'Física'], ['var(--qui)', 'Química']]);
+  const irTopico = (r) => { const m = MK[r.materia_nome]; if (m && r.topico) vai({ tipo: 'topico', m, t: r.topico }); };
+
+  // barras horizontais (valor desde zero) ou pontos (escala ajustada)
+  function hbars(box, rows, o) {
+    const W = box.clientWidth || 600, rowH = o.rowH || 26, H = rows.length * rowH + (o.dots ? 22 : 4);
+    const svg = rxSvg(box, W, H, o.aria);
+    const lw = Math.min(W * 0.46, rxLarg(svg, rows.map(o.label)) + 10);
+    const vals = rows.map(o.value);
+    const dom = o.dots ? [Math.floor((d3.min(vals) - 15) / 10) * 10, Math.ceil((d3.max(vals) + 15) / 10) * 10] : [0, d3.max(vals)];
+    const x = d3.scaleLinear().domain(dom).range([lw, W - 52]);
+    if (o.dots) {
+      const g = svg.append('g').attr('class', 'grid');
+      x.ticks(4).forEach((v) => { g.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 0).attr('y2', H - 20); svg.append('text').attr('x', x(v)).attr('y', H - 4).attr('text-anchor', 'middle').text(v); });
+    }
+    const gr = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${i * rowH})`);
+    gr.append('text').attr('x', lw - 8).attr('y', rowH / 2 + 4).attr('text-anchor', 'end').attr('class', 'strong').text(o.label);
+    if (o.dots) {
+      gr.append('line').attr('x1', lw).attr('x2', (r) => x(o.value(r))).attr('y1', rowH / 2).attr('y2', rowH / 2).style('stroke', 'var(--line)');
+      gr.append('circle').attr('cx', (r) => x(o.value(r))).attr('cy', rowH / 2).attr('r', 6).style('fill', o.color).style('stroke', 'var(--surface)').style('stroke-width', 2);
+    } else {
+      gr.append('rect').attr('x', lw).attr('y', 5).attr('height', rowH - 10).attr('width', (r) => Math.max(1, x(o.value(r)) - lw)).attr('rx', 3).style('fill', o.color);
+    }
+    gr.append('text').attr('x', (r) => x(o.value(r)) + (o.dots ? 10 : 5)).attr('y', rowH / 2 + 4).text(o.text);
+    const hit = gr.append('rect').attr('width', W).attr('height', rowH).style('fill', 'transparent');
+    rxHover(hit, box, o.tip, o.click);
+  }
+  // barras empilhadas por ano
+  function porAno(box, rows, keys, cores, ymax, aria, H, total) {
+    const W = box.clientWidth || 600, m = { t: 8, r: 4, b: 22, l: 26 };
+    const svg = rxSvg(box, W, H, aria);
+    const x = d3.scaleBand().domain(rows.map((r) => r.ano)).range([m.l, W - m.r]).padding(0.22);
+    const y = d3.scaleLinear().domain([0, ymax]).nice().range([H - m.b, m.t]);
+    const g = svg.append('g').attr('class', 'grid');
+    y.ticks(4).forEach((v) => { g.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)); svg.append('text').attr('x', m.l - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').text(v); });
+    d3.stack().keys(keys)(rows).forEach((s, i) => {
+      svg.append('g').selectAll('rect').data(s).join('rect').attr('x', (p) => x(p.data.ano)).attr('width', x.bandwidth())
+        .attr('y', (p) => y(p[1]) + 1).attr('height', (p) => Math.max(0, y(p[0]) - y(p[1]) - 2)).attr('rx', 2).style('fill', cores[i]);
+    });
+    const passo = x.bandwidth() < 26 ? 2 : 1;
+    rows.forEach((r, i) => { if (!(i % passo)) svg.append('text').attr('x', x(r.ano) + x.bandwidth() / 2).attr('y', H - 6).attr('text-anchor', 'middle').text(W < 520 ? "'" + String(r.ano).slice(2) : r.ano); });
+    const hit = svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.ano) - x.step() * x.paddingInner() / 2).attr('width', x.step())
+      .attr('y', m.t).attr('height', H - m.t - m.b).style('fill', 'transparent');
+    rxHover(hit, box, (r) => [[null, String(r.ano), true], ...keys.map((k) => [k, r[k]]), ...(total ? [['Total', d3.sum(keys, (k) => r[k])]] : [])]);
+  }
+
+  function telaRaiox() {
+    S.view = 'raiox'; S.escopo = { tipo: 'tudo' };
+    RXDRAW.length = 0;
+    monta(el('div', { class: 'card pad stack' }, el('div', { class: 'skel', style: 'width:35%;height:26px' }), el('div', { class: 'skel', style: 'height:180px' })));
+    analise().then((A) => { if (S.view === 'raiox') montaRaiox(A); })
+      .catch(() => monta(el('div', { class: 'card empty' }, el('h2', { text: 'Não foi possível carregar a análise' }), el('p', { class: 'muted', text: 'Recarregue a página para tentar de novo.' }))));
+  }
+
+  function montaRaiox(A) {
+    RXDRAW.length = 0;
+    const R = (nome) => A.resumo_materia.find((r) => r.materia_nome === nome) || {};
+    const G = (fator, grupo) => (A.nivel_grupos.find((r) => r.fator === fator && r.grupo === grupo && r.materia_nome === 'Todas') || {}).nivel_tipico;
+    const ma = A.materia_ano, nA = ma.length;
+    const media = (k) => d3.sum(ma, (r) => +r[k]) / nA;
+    const tops = A.topicos.slice().sort((a, b) => b.por_prova - a.por_prova);
+    const T = (id) => A.topicos.find((r) => r.topico === id) || {};
+    const coer = (k) => A.tri_coerencia.find((r) => +r.acertos === k) || {};
+    const meta = (v) => A.acertos_meta_resumo.find((r) => +r.meta === v) || {};
+    const gab = (l) => A.gabarito.find((r) => r.letra === l) || {};
+    const bloco1 = A.blocos.find((r) => +r.bloco === 1) || {};
+    const secoes = [];
+    const sec = (id, tituloS, ...kids) => { secoes.push([id, tituloS]); return el('section', { class: 'card pad stack rx-sec', id: 'rx-' + id, 'aria-labelledby': 'rx-h-' + id }, el('h2', { id: 'rx-h-' + id, text: tituloS }), ...kids); };
+
+    const corpo = [];
+    // números gerais
+    const tot = R('Todas');
+    corpo.push(sec('numeros', 'Uma prova típica, em números',
+      el('p', { class: 'muted', text: `Média por prova nas ${nA} provas regulares de 2009 a 2023 (45 questões de Natureza cada).` }),
+      el('div', { class: 'rx-tiles' },
+        el('div', { class: 'rx-tile' }, el('span', { class: 'k', text: 'Com conta' }), el('span', { class: 'v', text: fmt(tot.calculo_por_prova) }), el('span', { class: 'muted sm', text: `questões (${fmt(tot.pct_calculo, 0)}%)` })),
+        el('div', { class: 'rx-tile' }, el('span', { class: 'k', text: 'Com figura, gráfico ou tabela' }), el('span', { class: 'v', text: fmt(tot.figura_por_prova) }), el('span', { class: 'muted sm', text: `questões (${fmt(tot.pct_figura, 0)}%)` })),
+        el('div', { class: 'rx-tile' }, el('span', { class: 'k', text: 'Misturam duas matérias' }), el('span', { class: 'v', text: fmt(tot.interdisciplinar_por_prova) }), el('span', { class: 'muted sm', text: `questões (${fmt(tot.pct_interdisciplinar, 0)}%)` })),
+        el('div', { class: 'rx-tile' }, el('span', { class: 'k', text: 'Fáceis (nível < 600)' }), el('span', { class: 'v', text: fmt(tot.faceis_por_prova) }), el('span', { class: 'muted sm', text: `nível típico da prova: ${fmt(tot.nivel_tipico, 0)}` })))));
+
+    // matérias
+    const tilesM = el('div', { class: 'rx-tiles' }, ...['Biologia', 'Física', 'Química'].map((n) => el('div', { class: 'rx-tile' },
+      el('span', { class: 'k' }, el('span', { class: 'dot', style: `--mc:${corN(n)}` }), n), el('span', { class: 'v', text: fmt(media(n)) }),
+      el('span', { class: 'muted sm', text: `questões por prova · ${fmt(100 * media(n) / 45, 0)}% da prova` }))));
+    const perfil = el('div', { class: 'tablewrap' }, el('table', { class: 'tbl' },
+      el('thead', {}, el('tr', {}, ...['Matéria', 'Questões', 'Com conta', 'Com figura', 'Interdisciplinares', 'Fáceis', 'Difíceis (≥ 700)', 'Nível típico', 'Texto (caracteres)'].map((t) => el('th', { text: t })))),
+      el('tbody', {}, ...A.resumo_materia.map((r) => el('tr', {}, el('td', { text: r.materia_nome }), el('td', { text: fmt(r.questoes_por_prova) }), el('td', { text: fmt(r.calculo_por_prova) }),
+        el('td', { text: fmt(r.figura_por_prova) }), el('td', { text: fmt(r.interdisciplinar_por_prova) }), el('td', { text: fmt(r.faceis_por_prova) }), el('td', { text: fmt(r.dificeis_por_prova) }),
+        el('td', { text: fmt(r.nivel_tipico, 0) }), el('td', { text: fmt(r.caracteres, 0) }))))));
+    corpo.push(sec('materias', 'Quanto cai de cada matéria', tilesM,
+      el('p', { text: 'Desde 2013 a divisão é quase 15/15/15. Os primeiros anos do novo ENEM tinham mais Biologia e, em 2009, só 8 questões de Química.' }),
+      legMat(), chart(el('div', { class: 'rx-chart', style: 'min-height:260px' }), (box) => porAno(box, ma.map((r) => ({ ano: +r.ano, Biologia: +r.Biologia, 'Física': +r['Física'], 'Química': +r['Química'] })),
+        ['Biologia', 'Física', 'Química'], ['var(--bio)', 'var(--fis)', 'var(--qui)'], 45, 'Questões por matéria em cada prova', 260, false)),
+      el('h3', { text: 'Perfil de cada matéria (média por prova)' }), perfil));
+
+    // contas
+    corpo.push(sec('contas', 'Questões com conta',
+      el('p', { text: `Em média ${fmt(tot.calculo_por_prova)} das 45 questões exigem cálculo: ${fmt(R('Física').calculo_por_prova)} de Física (${fmt(R('Física').pct_calculo, 0)}% das questões de Física), ${fmt(R('Química').calculo_por_prova)} de Química e ${fmt(R('Biologia').calculo_por_prova)} de Biologia. O número varia bastante entre os anos. Questões com conta são mais difíceis: nível típico de ${fmt(G('Conta', 'Com conta'), 0)} pontos, contra ${fmt(G('Conta', 'Sem conta'), 0)} nas que não têm.` }),
+      legenda([['var(--fis)', 'Física'], ['var(--qui)', 'Química'], ['var(--bio)', 'Biologia']]),
+      chart(el('div', { class: 'rx-chart', style: 'min-height:220px' }), (box) => { const rows = A.calculo_ano.map((r) => ({ ano: +r.ano, 'Física': +r['Física'], 'Química': +r['Química'], Biologia: +r.Biologia }));
+        porAno(box, rows, ['Física', 'Química', 'Biologia'], ['var(--fis)', 'var(--qui)', 'var(--bio)'], d3.max(rows, (r) => r['Física'] + r['Química'] + r.Biologia), 'Questões com conta em cada prova', 220, true); }),
+      el('p', { class: 'muted sm', text: '"Com conta" marca questões em que é preciso fazer um cálculo numérico para chegar à resposta.' })));
+
+    // dificuldade
+    const FX = ['Fácil (< 550)', 'Média (550–650)', 'Difícil (650–750)', 'Muito difícil (≥ 750)'], OP = [0.3, 0.55, 0.8, 1];
+    corpo.push(sec('dificuldade', 'Como a dificuldade se distribui',
+      el('p', { text: 'Questões por prova em cada faixa de nível. O nível de uma questão é a nota (≈ 500 + 100·b da TRI) em que o candidato passa a ter boa chance de acertá-la. Biologia concentra as fáceis; Física e Química têm mais questões acima de 650.' }),
+      el('div', { class: 'rx-legend' }, ...FX.map((f, j) => el('span', {}, el('i', { style: `background:var(--ink);opacity:${OP[j]}` }), f))),
+      chart(el('div', { class: 'rx-chart' }), (box) => {
+        const rows = A.faixas, W = box.clientWidth || 600, rowH = 38, H = rows.length * rowH + 4;
+        const svg = rxSvg(box, W, H, 'Questões por prova em cada faixa de dificuldade');
+        const lw = rxLarg(svg, rows.map((r) => r.materia_nome)) + 12;
+        const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => d3.sum(FX, (f) => +r[f]))]).range([lw, W - 6]);
+        const tt = rxTip(box);
+        rows.forEach((r, i) => {
+          const yy = i * rowH; let acc = 0;
+          svg.append('text').attr('x', lw - 8).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'end').attr('class', 'strong').text(r.materia_nome);
+          FX.forEach((f, j) => {
+            const v = +r[f], x0 = x(acc), x1 = x(acc + v); acc += v;
+            const seg = svg.append('rect').attr('x', x0 + 1).attr('y', yy + 6).attr('width', Math.max(0, x1 - x0 - 2)).attr('height', rowH - 12).attr('rx', 3).style('fill', corN(r.materia_nome)).style('opacity', OP[j]);
+            if (x1 - x0 > 26) svg.append('text').attr('x', (x0 + x1) / 2).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'middle').attr('class', 'strong').style('pointer-events', 'none').text(fmt(v));
+            seg.on('pointerenter pointermove', (ev) => { const [px, py] = d3.pointer(ev, box); tt.show([[null, r.materia_nome, true], [f, fmt(v) + ' por prova']], px, py); }).on('pointerleave', () => tt.hide());
+          });
+        });
+      })));
+
+    // tópicos que mais caem
+    corpo.push(sec('topicos', 'Os 20 tópicos que mais caem',
+      el('p', { class: 'muted', text: 'Questões por prova, média de 2009 a 2023. Clique numa barra para abrir as questões do tópico.' }), legMat(),
+      chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, tops.slice(0, 20), { aria: 'Os 20 tópicos com mais questões por prova', rowH: 24,
+        label: (r) => r.topico_nome, value: (r) => +r.por_prova, color: (r) => corN(r.materia_nome), text: (r) => fmt(r.por_prova), click: irTopico,
+        tip: (r) => [[null, r.topico_nome, true], ['Matéria', r.materia_nome], ['Por prova', fmt(r.por_prova)], ['Nível típico', fmt(r.nivel_mediano, 0)], ['Fáceis (< 600)', fmt(r.pct_faceis, 0) + '%'], ['Com conta', fmt(r.pct_calculo, 0) + '%'], [null, 'Clique para abrir as questões']] }))));
+
+    // prioridade
+    corpo.push(sec('prioridade', 'Onde estudar primeiro: frequência × dificuldade',
+      el('p', { text: 'Cada ponto é um tópico. Mais à direita, cai mais; mais abaixo, as questões são mais acessíveis. O canto inferior direito é onde cada hora de estudo rende mais pontos. Clique num ponto para abrir as questões.' }), legMat(),
+      chart(el('div', { class: 'rx-chart', style: 'min-height:360px' }), (box) => {
+        const rows = A.topicos.filter((r) => r.nivel_mediano != null).map((r) => ({ ...r, x: +r.por_prova, y: +r.nivel_mediano }));
+        const W = box.clientWidth || 600, H = 360, m = { t: 16, r: 12, b: 36, l: 44 };
+        const svg = rxSvg(box, W, H, 'Tópicos por frequência e nível típico');
+        const x = d3.scaleLinear().domain([0, Math.ceil(d3.max(rows, (r) => r.x))]).range([m.l, W - m.r]);
+        const y = d3.scaleLinear().domain(d3.extent(rows, (r) => r.y)).nice().range([H - m.b, m.t]);
+        const g = svg.append('g').attr('class', 'grid');
+        y.ticks(5).forEach((v) => { g.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)); svg.append('text').attr('x', m.l - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').text(v); });
+        x.ticks(W < 500 ? 4 : 8).forEach((v) => svg.append('text').attr('x', x(v)).attr('y', H - m.b + 16).attr('text-anchor', 'middle').text(fmt(v, v % 1 ? 1 : 0)));
+        svg.append('text').attr('x', W - m.r).attr('y', H - 4).attr('text-anchor', 'end').text('questões por prova →');
+        svg.append('text').attr('x', m.l).attr('y', m.t - 6).text('↑ nível típico (pontos)');
+        const mx = d3.median(rows, (r) => r.x);
+        svg.append('line').attr('class', 'ref').attr('x1', x(mx)).attr('x2', x(mx)).attr('y1', m.t).attr('y2', H - m.b);
+        const dots = svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.x)).attr('cy', (r) => y(r.y)).attr('r', 7)
+          .style('fill', (r) => corN(r.materia_nome)).style('stroke', 'var(--surface)').style('stroke-width', 2);
+        rxHover(dots, box, (r) => [[null, r.topico_nome, true], ['Matéria', r.materia_nome], ['Por prova', fmt(r.x)], ['Nível típico', fmt(r.y, 0)], ['Fáceis (< 600)', fmt(r.pct_faceis, 0) + '%']], irTopico);
+        const lab = rows.slice().sort((a, b) => b.x - a.x).slice(0, W < 500 ? 4 : 8).map((r) => ({ r, x: x(r.x) + 10, y: y(r.y) + 4 })).sort((a, b) => a.y - b.y);
+        for (let i = 1; i < lab.length; i++) for (let j = 0; j < i; j++) if (Math.abs(lab[i].x - lab[j].x) < 130 && lab[i].y - lab[j].y < 13) lab[i].y = lab[j].y + 13;
+        lab.forEach((l) => { const t = svg.append('text').attr('x', l.x).attr('y', l.y).attr('class', 'strong').style('pointer-events', 'none').text(l.r.topico_nome); if (l.x + t.node().getComputedTextLength() > W - 2) t.attr('x', l.x - 20).attr('text-anchor', 'end'); });
+      })));
+
+    // mapa por ano
+    corpo.push(sec('mapa', 'Mapa por ano: quantas questões de cada tópico',
+      el('p', { class: 'muted', text: 'Quanto mais escura a célula, mais questões do tópico naquela prova. Células vazias: o tópico não caiu. Clique no nome do tópico para abrir as questões.' }),
+      el('div', { class: 'rx-scroll' }, chart(el('div', { class: 'rx-chart', style: 'min-height:700px' }), (box) => {
+        const d = A.topico_ano, anos = [...new Set(d.map((r) => +r.ano))].sort();
+        const ordem = { 'Biologia': 0, 'Física': 1, 'Química': 2 };
+        const idDe = new Map(A.topicos.map((r) => [r.topico_nome, r.topico]));
+        const tops2 = [...new Map(d.map((r) => [r.topico_nome, r.materia_nome])).entries()]
+          .map(([t, mat]) => ({ t, mat, tot: d3.sum(d.filter((r) => r.topico_nome === t), (r) => +r.questoes) })).sort((a, b) => ordem[a.mat] - ordem[b.mat] || b.tot - a.tot);
+        const cel = new Map(d.map((r) => [r.topico_nome + '|' + r.ano, +r.questoes])), maxv = d3.max(d, (r) => +r.questoes);
+        const rowH = 18, top = 18;
+        const lw = rxLarg(rxSvg(box, 10, 10, ''), tops2.map((r) => r.t)) + 12;
+        const cw = Math.max(22, ((box.parentElement.clientWidth || 600) - lw - 30) / anos.length);
+        const W = lw + cw * anos.length + 30, H = top + tops2.length * rowH + 6;
+        const svg = rxSvg(box, W, H, 'Questões por tópico em cada prova');
+        anos.forEach((a, j) => svg.append('text').attr('x', lw + j * cw + cw / 2).attr('y', 11).attr('text-anchor', 'middle').text("'" + String(a).slice(2)));
+        svg.append('text').attr('x', lw + anos.length * cw + 6).attr('y', 11).text('Σ');
+        const tt = rxTip(box);
+        tops2.forEach((tp, i) => {
+          const yy = top + i * rowH;
+          svg.append('text').attr('x', lw - 8).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'end').attr('class', 'strong clk').text(tp.t)
+            .on('click', () => irTopico({ materia_nome: tp.mat, topico: idDe.get(tp.t) }));
+          anos.forEach((a, j) => {
+            const v = cel.get(tp.t + '|' + a) || 0;
+            const r = svg.append('rect').attr('x', lw + j * cw + 1).attr('y', yy + 1).attr('width', cw - 2).attr('height', rowH - 2).attr('rx', 2)
+              .style('fill', v ? corN(tp.mat) : 'var(--sunk)').style('opacity', v ? 0.25 + 0.75 * v / maxv : 1);
+            if (v && cw >= 20) svg.append('text').attr('x', lw + j * cw + cw / 2).attr('y', yy + rowH / 2 + 4).attr('text-anchor', 'middle').attr('class', 'strong').style('pointer-events', 'none').text(v);
+            r.on('pointerenter pointermove', (ev) => { const [px, py] = d3.pointer(ev, box); tt.show([[null, tp.t, true], [String(a), v + (v === 1 ? ' questão' : ' questões')]], px, py); }).on('pointerleave', () => tt.hide());
+          });
+          svg.append('text').attr('x', lw + anos.length * cw + 6).attr('y', yy + rowH / 2 + 4).text(tp.tot);
+        });
+      }))));
+
+    // tendência
+    corpo.push(sec('tendencia', 'O que mudou: 2009–2016 × 2017–2023',
+      el('p', { text: `Ecologia caiu de ${fmt(T('ecologia').por_prova_2009_2016)} para ${fmt(T('ecologia').por_prova_2017_2023)} questões por prova e continua sendo o tópico mais cobrado. Eletroquímica subiu de ${fmt(T('eletroquimica').por_prova_2009_2016)} para ${fmt(T('eletroquimica').por_prova_2017_2023)}. O gráfico mostra os tópicos que mais ganharam ou perderam espaço, em questões por prova.` }), legMat(),
+      chart(el('div', { class: 'rx-chart' }), (box) => {
+        const rows = A.topicos.map((r) => ({ ...r, tv: +r.tendencia })).filter((r) => Math.abs(r.tv) >= 0.3).sort((a, b) => b.tv - a.tv);
+        const W = box.clientWidth || 600, rowH = 24, H = rows.length * rowH + 22;
+        const svg = rxSvg(box, W, H, 'Variação de questões por prova entre os dois períodos');
+        const lw = Math.min(W * 0.42, rxLarg(svg, rows.map((r) => r.topico_nome)) + 10);
+        const ext = d3.max(rows, (r) => Math.abs(r.tv)), x = d3.scaleLinear().domain([-ext, ext]).range([lw + 30, W - 40]);
+        svg.append('line').attr('class', 'ref').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 0).attr('y2', H - 20);
+        const gr = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${i * rowH})`);
+        gr.append('text').attr('x', lw - 8).attr('y', rowH / 2 + 4).attr('text-anchor', 'end').attr('class', 'strong').text((r) => r.topico_nome);
+        gr.append('rect').attr('x', (r) => Math.min(x(0), x(r.tv))).attr('y', 5).attr('width', (r) => Math.max(1, Math.abs(x(r.tv) - x(0)))).attr('height', rowH - 10).attr('rx', 3).style('fill', (r) => corN(r.materia_nome));
+        gr.append('text').attr('x', (r) => r.tv >= 0 ? x(r.tv) + 5 : x(r.tv) - 5).attr('y', rowH / 2 + 4).attr('text-anchor', (r) => r.tv >= 0 ? 'start' : 'end').text((r) => (r.tv >= 0 ? '+' : '−') + fmt(Math.abs(r.tv)));
+        rxHover(gr.append('rect').attr('width', W).attr('height', rowH).style('fill', 'transparent'), box,
+          (r) => [[null, r.topico_nome, true], ['2009–2016', fmt(r.por_prova_2009_2016) + ' por prova'], ['2017–2023', fmt(r.por_prova_2017_2023) + ' por prova']], irTopico);
+        svg.append('text').attr('x', x(0) - 6).attr('y', H - 4).attr('text-anchor', 'end').text('← perdeu espaço');
+        svg.append('text').attr('x', x(0) + 6).attr('y', H - 4).text('ganhou espaço →');
+      })));
+
+    // ordem da prova
+    corpo.push(sec('ordem', 'A ordem da prova não indica a dificuldade',
+      el('p', { text: `A dificuldade quase não acompanha a posição da questão. As primeiras 9 questões de Natureza são as mais acessíveis (nível típico ${fmt(bloco1.nivel_tipico, 0)}, ${fmt(bloco1.pct_faceis, 0)}% fáceis), mas há questões fáceis espalhadas até o fim. Na prova, faça uma primeira passada resolvendo as que você domina e só depois volte às longas e de conta.` }),
+      chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, A.blocos.map((r) => ({ ...r, v: +r.nivel_tipico })), { aria: 'Nível típico por bloco de 9 questões', dots: true,
+        label: (r) => r.questoes_da_prova + ' questão', value: (r) => r.v, color: () => 'var(--focus)', text: (r) => fmt(r.v, 0),
+        tip: (r) => [[null, r.questoes_da_prova + ' questão de Natureza', true], ['Nível típico', fmt(r.v, 0)], ['Fáceis (< 600)', fmt(r.pct_faceis, 0) + '%']] }))));
+
+    // leitura e figuras
+    corpo.push(sec('leitura', 'Leitura, figuras e dificuldade',
+      el('p', { text: `Uma questão de Natureza tem, em média, cerca de ${fmt(tot.caracteres, 0)} caracteres (texto, comando e alternativas). Texto longo não significa questão difícil: as mais curtas são as de nível mais alto, porque costumam ser de conta. Questões com figura têm nível típico de ${fmt(G('Figura', 'Com figura'), 0)}, contra ${fmt(G('Figura', 'Sem figura'), 0)} sem figura.` }),
+      el('div', { class: 'rx-two' },
+        el('div', {}, el('h3', { text: 'Nível típico por tamanho do texto' }), chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, A.texto.map((r) => ({ ...r, v: +r.nivel_tipico })), { aria: 'Nível típico por tamanho do texto', dots: true,
+          label: (r) => r.faixa_texto, value: (r) => r.v, color: () => 'var(--focus)', text: (r) => fmt(r.v, 0), tip: (r) => [[null, r.faixa_texto + ' caracteres', true], ['Questões', r.questoes], ['Nível típico', fmt(r.v, 0)]] }))),
+        el('div', {}, el('h3', { text: 'Com e sem cada característica' }), chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, A.nivel_grupos.filter((r) => r.materia_nome === 'Todas').map((r) => ({ ...r, v: +r.nivel_tipico })), { aria: 'Nível típico com e sem conta, figura e mistura de matérias', dots: true,
+          label: (r) => r.grupo, value: (r) => r.v, color: (r) => ({ Conta: 'var(--fis)', Figura: 'var(--gold)', Interdisciplinar: 'var(--bio)' }[r.fator]), text: (r) => fmt(r.v, 0), tip: (r) => [[null, r.grupo, true], ['Questões', r.questoes], ['Nível típico', fmt(r.v, 0)]] }))))));
+
+    // TRI
+    const anosTri = [...new Set(A.tri_acertos.map((r) => String(r.ano)))].sort();
+    const selAno = el('select', { id: 'rx-ano', 'aria-label': 'Ano da prova', style: 'border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px' }, ...anosTri.map((a) => el('option', { value: a, text: a })));
+    selAno.value = anosTri.includes(rxAno) ? rxAno : anosTri[anosTri.length - 1];
+    const triBox = chart(el('div', { class: 'rx-chart', style: 'min-height:300px' }), (box) => {
+      const rows = A.tri_acertos.filter((r) => String(r.ano) === selAno.value).map((r) => ({ k: +r.acertos, coe: +r.coerente, inc: +r.incoerente, med: +r.mediana, p10: +r.p10, p90: +r.p90, n: +r.itens }));
+      const W = box.clientWidth || 600, H = 300, m = { t: 12, r: 14, b: 34, l: 44 };
+      const svg = rxSvg(box, W, H, 'Nota estimada por número de acertos na prova de ' + selAno.value);
+      const kmax = rows[rows.length - 1].k, x = d3.scaleLinear().domain([0, kmax]).range([m.l, W - m.r]), y = d3.scaleLinear().domain([250, 900]).range([H - m.b, m.t]);
+      const g = svg.append('g').attr('class', 'grid');
+      [300, 400, 500, 600, 700, 800, 900].forEach((v) => { g.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)); svg.append('text').attr('x', m.l - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').text(v); });
+      [0, 10, 20, 30, 40].filter((v) => v <= kmax).forEach((v) => svg.append('text').attr('x', x(v)).attr('y', H - m.b + 16).attr('text-anchor', 'middle').text(v));
+      svg.append('text').attr('x', W - m.r).attr('y', H - 4).attr('text-anchor', 'end').text('acertos →');
+      svg.append('path').datum(rows).attr('d', d3.area().x((r) => x(r.k)).y0((r) => y(r.p10)).y1((r) => y(r.p90))).style('fill', SER[1]).style('opacity', 0.18);
+      [['coe', 0], ['med', 1], ['inc', 2]].forEach(([f, i]) => svg.append('path').datum(rows).attr('d', d3.line().x((r) => x(r.k)).y((r) => y(r[f]))).style('fill', 'none').style('stroke', SER[i]).style('stroke-width', 2.5));
+      const tt = rxTip(box), cross = svg.append('line').attr('class', 'ref').attr('y1', m.t).attr('y2', H - m.b).style('opacity', 0);
+      svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+        .on('pointerenter pointermove', (ev) => { const [px, py] = d3.pointer(ev, box); const r = rows[Math.max(0, Math.min(rows.length - 1, Math.round(x.invert(px))))];
+          cross.attr('x1', x(r.k)).attr('x2', x(r.k)).style('opacity', 1);
+          tt.show([[null, `${r.k} acertos de ${r.n}`, true], ['Mais fáceis', fmt(r.coe, 0)], ['Ao acaso', `${fmt(r.med, 0)} (${fmt(r.p10, 0)}–${fmt(r.p90, 0)})`], ['Mais difíceis', fmt(r.inc, 0)]], px, py); })
+        .on('pointerleave', () => { tt.hide(); cross.style('opacity', 0); });
+    });
+    selAno.addEventListener('change', () => { rxAno = selAno.value; RXDRAW.filter(([b]) => b === triBox).forEach(([b, f]) => f(b)); });
+    corpo.push(sec('tri', 'A TRI na prática: acertar o quê importa tanto quanto acertar quanto',
+      el('p', { text: 'A TRI premia a coerência. Quem acerta as fáceis e erra as difíceis tem nota alta; quem erra as fáceis e acerta as difíceis parece ter chutado e é penalizado. Na prova de 2023, com o mesmo número de acertos:' }),
+      el('div', { class: 'rx-call' },
+        el('div', {}, el('div', { class: 'muted sm', text: '30 acertos, as mais fáceis' }), el('div', { class: 'v', style: 'color:var(--good)', text: fmt(coer(30).acerta_faceis, 0) }), el('div', { class: 'muted sm', text: 'pontos estimados' })),
+        el('div', {}, el('div', { class: 'muted sm', text: '30 acertos, as mais difíceis' }), el('div', { class: 'v', style: 'color:var(--bad)', text: fmt(coer(30).acerta_dificeis, 0) }), el('div', { class: 'muted sm', text: 'pontos estimados' })),
+        el('div', {}, el('div', { class: 'muted sm', text: '15 acertos, as mais fáceis' }), el('div', { class: 'v', text: fmt(coer(15).acerta_faceis, 0) }), el('div', { class: 'muted sm', text: 'mais que 30 acertos incoerentes' }))),
+      el('div', { class: 'row' }, el('label', { for: 'rx-ano', class: 'muted sm', text: 'Prova' }), selAno),
+      legenda([[SER[0], 'Acertando as mais fáceis'], [SER[1], 'Acertos ao acaso (faixa: 80% dos casos)'], [SER[2], 'Acertando as mais difíceis']]),
+      triBox, el('p', { class: 'muted sm', text: 'Nota estimada pelo método EAP com os parâmetros a, b, c que o INEP publicou para cada questão. A nota oficial pode diferir alguns pontos.' })));
+
+    // acertos por nota
+    corpo.push(sec('metas', 'Quantos acertos para cada nota',
+      el('p', { text: `Mediana das provas de 2009 a 2025. "Coerentes" supõe que você acerta primeiro as mais fáceis; "ao acaso" é o caso típico de quem acerta sem padrão. Para chegar a 650 pontos, são cerca de ${fmt(meta(650).coerente, 0)} acertos coerentes, contra ${fmt(meta(650).acaso, 0)} ao acaso.` }),
+      el('div', { class: 'tablewrap' }, el('table', { class: 'tbl' },
+        el('thead', {}, el('tr', {}, ...['Nota', 'Acertos coerentes', 'Mínimo entre provas', 'Máximo entre provas', 'Acertos ao acaso'].map((t) => el('th', { text: t })))),
+        el('tbody', {}, ...A.acertos_meta_resumo.map((r) => el('tr', {}, el('td', { text: r.meta }), el('td', { text: fmt(r.coerente, 0) }), el('td', { text: fmt(r.coerente_min, 0) }), el('td', { text: fmt(r.coerente_max, 0) }), el('td', { text: fmt(r.acaso, 0) }))))))));
+
+    // gabarito
+    corpo.push(sec('gabarito', 'Gabarito: as letras são equilibradas',
+      el('p', { text: `Em 2009–2025 a letra mais frequente foi a D (${fmt(gab('D').pct)}%) e a menos frequente a A (${fmt(gab('A').pct)}%). A diferença é pequena: cada letra aparece entre 8 e 10 vezes por prova, então não existe "letra da sorte". No chute, o que importa é marcar todas, porque questão em branco vale zero.` }),
+      chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, A.gabarito.map((r) => ({ ...r, v: +r.por_prova })), { aria: 'Vezes por prova em que cada letra é a resposta certa', rowH: 28,
+        label: (r) => r.letra, value: (r) => r.v, color: () => 'var(--focus)', text: (r) => `${fmt(r.v)} por prova (${fmt(r.pct)}%)`, tip: (r) => [[null, 'Letra ' + r.letra, true], ['Por prova', fmt(r.v)], ['Total 2009–2025', r.questoes]] }))));
+
+    // interdisciplinares
+    corpo.push(sec('interdisciplinar', 'Questões interdisciplinares',
+      el('p', { text: `Cerca de ${fmt(tot.interdisciplinar_por_prova)} questões por prova misturam duas matérias, e em cerca de 2 de cada 3 a mistura é entre Biologia e Química (ecologia com química ambiental, fisiologia com bioquímica). Elas são mais acessíveis: nível típico de ${fmt(G('Interdisciplinar', 'Mistura matérias'), 0)}.` }),
+      chart(el('div', { class: 'rx-chart' }), (box) => hbars(box, A.pares.map((r) => ({ ...r, v: +r.questoes })).sort((a, b) => b.v - a.v), { aria: 'Questões interdisciplinares por par de matérias',
+        label: (r) => r.materia_nome + ' + ' + r.materia_sec_nome, value: (r) => r.v, color: (r) => corN(r.materia_nome), text: (r) => r.v,
+        tip: (r) => [[null, `${r.materia_nome} (principal) + ${r.materia_sec_nome}`, true], ['Questões 2009–2023', r.v]], click: (r) => vai({ tipo: 'inter', m: MK[r.materia_sec_nome] }) }))));
+
+    // habilidades
+    const conf = A.conferencia[0] || {};
+    corpo.push(sec('habilidades', 'Habilidades da Matriz de Referência (H1–H30)',
+      el('p', { text: `As habilidades H1 a H19 (competências C1 a C5) são gerais e valem para as três matérias. H20–H23 são de Física, H24–H27 de Química e H28–H30 de Biologia. Nas questões dessas habilidades específicas, a matéria atribuída pela IA bate com a do INEP em ${fmt(conf.concordancia, 0)}% dos casos.` }),
+      legenda([['var(--line-strong)', 'Gerais (C1–C5)'], ['var(--fis)', 'Física (C6)'], ['var(--qui)', 'Química (C7)'], ['var(--bio)', 'Biologia (C8)']]),
+      chart(el('div', { class: 'rx-chart', style: 'min-height:220px' }), (box) => {
+        const rows = A.habilidades.filter((r) => r.habilidade != null).map((r) => ({ h: +r.habilidade, pp: +r.por_prova, niv: +r.nivel_medio, q: +r.questoes, c: r.competencia })).sort((a, b) => a.h - b.h);
+        const cor = (h) => h >= 28 ? 'var(--bio)' : h >= 24 ? 'var(--qui)' : h >= 20 ? 'var(--fis)' : 'var(--line-strong)';
+        const W = box.clientWidth || 600, H = 220, m = { t: 8, r: 4, b: 22, l: 30 };
+        const svg = rxSvg(box, W, H, 'Questões por prova em cada habilidade');
+        const x = d3.scaleBand().domain(rows.map((r) => r.h)).range([m.l, W - m.r]).padding(0.2), y = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.pp)]).nice().range([H - m.b, m.t]);
+        const g = svg.append('g').attr('class', 'grid');
+        y.ticks(4).forEach((v) => { g.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)); svg.append('text').attr('x', m.l - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').text(fmt(v, v % 1 ? 1 : 0)); });
+        svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.h)).attr('width', x.bandwidth()).attr('y', (r) => y(r.pp)).attr('height', (r) => y(0) - y(r.pp)).attr('rx', 2).style('fill', (r) => cor(r.h));
+        const passo = x.bandwidth() < 14 ? 5 : 1;
+        rows.forEach((r) => { if (passo === 1 || r.h % passo === 0 || r.h === 1) svg.append('text').attr('x', x(r.h) + x.bandwidth() / 2).attr('y', H - 6).attr('text-anchor', 'middle').text('H' + r.h); });
+        rxHover(svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.h) - 2).attr('width', x.step()).attr('y', m.t).attr('height', H - m.t - m.b).style('fill', 'transparent'), box,
+          (r) => [[null, `H${r.h} (${r.c})`, true], ['Por prova', fmt(r.pp, 2)], ['Questões 2009–2025', r.q], ['Nível típico', fmt(r.niv, 0)]]);
+      })));
+
+    // tabela de tópicos
+    const tbody = el('tbody', {});
+    const desenhaTabela = () => {
+      const { col, desc } = rxOrd, txt = col === 'topico_nome' || col === 'materia_nome';
+      const rows = A.topicos.slice().sort((a, b) => { const c = txt ? String(a[col]).localeCompare(String(b[col]), 'pt-BR') : (+a[col]) - (+b[col]); return desc ? -c : c; });
+      tbody.replaceChildren(...rows.map((r) => el('tr', { class: 'clk', tabindex: '0', onclick: () => irTopico(r), onkeydown: (ev) => { if (ev.key === 'Enter') irTopico(r); } },
+        el('td', {}, el('span', { class: 'dot', style: `--mc:${corN(r.materia_nome)};margin-right:8px` }), r.topico_nome), el('td', { class: 'l', text: r.materia_nome }),
+        el('td', { text: fmt(r.por_prova, 2) }), el('td', { text: fmt(r.nivel_mediano, 0) }), el('td', { text: fmt(r.pct_faceis, 0) }), el('td', { text: fmt(r.pct_calculo, 0) }),
+        el('td', { text: (+r.tendencia > 0 ? '+' : '') + fmt(r.tendencia, 2) }))));
+    };
+    const ths = [['topico_nome', 'Tópico'], ['materia_nome', 'Matéria'], ['por_prova', 'Por prova'], ['nivel_mediano', 'Nível típico'], ['pct_faceis', '% fáceis'], ['pct_calculo', '% com conta'], ['tendencia', 'Variação']]
+      .map(([c, t]) => el('th', { 'data-sort': c, class: c === 'materia_nome' ? 'l' : null, tabindex: '0', 'aria-sort': rxOrd.col === c ? (rxOrd.desc ? 'descending' : 'ascending') : 'none',
+        onclick: () => { rxOrd = { col: c, desc: rxOrd.col === c ? !rxOrd.desc : !(c === 'topico_nome' || c === 'materia_nome') }; desenhaTabela(); } }, t));
+    desenhaTabela();
+    corpo.push(sec('tabela', 'Todos os tópicos',
+      el('p', { class: 'muted', text: 'Clique num cabeçalho para ordenar e numa linha para abrir as questões do tópico. "Fáceis" = nível abaixo de 600; "Variação" = diferença de questões por prova entre 2017–2023 e 2009–2016.' }),
+      el('div', { class: 'tablewrap' }, el('table', { class: 'tbl' }, el('thead', {}, el('tr', {}, ...ths)), tbody))));
+
+    // notas
+    corpo.push(el('details', { class: 'card pad rx-notes' }, el('summary', { text: 'Como os números foram feitos' }), el('ul', {},
+      el('li', { text: 'Base: 672 questões de Ciências da Natureza da aplicação regular de 2009 a 2023, com texto da enem.dev ligado ao item do INEP pelo gabarito. TRI, gabarito e habilidades usam também 2024 e 2025.' }),
+      el('li', { text: 'Matéria, tópico, "com conta" e "interdisciplinar" foram atribuídos por IA em uma única leitura, sem revisão humana.' }),
+      el('li', { text: 'Nível da questão = 500 + 100 × b, onde b é o parâmetro de dificuldade do modelo de 3 parâmetros do INEP. O nível típico é a mediana. Questões anuladas e 2 com discriminação quase nula (a < 0,3) ficam fora dessas contas.' }),
+      el('li', { text: '"Com figura" = imagem no enunciado ou nas alternativas. O tamanho do texto soma enunciado, comando e alternativas.' }),
+      el('li', { text: 'Notas por número de acertos: 3.000 combinações aleatórias por quantidade, além de acertar as k mais fáceis ou as k mais difíceis, com nota estimada por EAP (priori normal).' }),
+      el('li', { text: 'Habilidades por competência segundo a Matriz de Referência de Ciências da Natureza: C1 (H1–H4), C2 (H5–H7), C3 (H8–H12), C4 (H13–H16), C5 (H17–H19), C6 Física (H20–H23), C7 Química (H24–H27), C8 Biologia (H28–H30).' }))));
+
+    // cabeçalho com índice
+    const ms = ['Biologia', 'Física', 'Química'].map((n) => `${fmt(media(n))} de ${n}`).join(', ');
+    const cab = el('section', { class: 'card head' },
+      el('div', { class: 'band' }, el('div', { class: 'crumbs' }, el('button', { type: 'button', onclick: () => ir('inicio') }, 'Início')),
+        el('h1', { text: 'Raio-X da prova de Natureza' }),
+        el('p', { class: 'muted', text: `Em ${nA} provas regulares (2009–2023), cada prova de 45 questões trouxe em média ${ms}. Cerca de ${fmt(tot.calculo_por_prova, 0)} questões por prova exigem conta. O tópico que mais cai é ${tops[0].topico_nome}, com ${fmt(tops[0].por_prova)} questões por prova.` })),
+      el('div', { class: 'meta' }, el('nav', { class: 'rx-toc', 'aria-label': 'Seções do Raio-X' },
+        ...secoes.map(([id, t]) => el('button', { type: 'button', onclick: () => document.getElementById('rx-' + id)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }, t.split(':')[0])))));
+    monta(cab, ...corpo);
+    requestAnimationFrame(() => RXDRAW.forEach(([b, f]) => { try { f(b); } catch (e) { b.replaceChildren(el('p', { class: 'muted sm', text: 'Não foi possível desenhar este gráfico.' })); } }));
+  }
+  let rxResize = null;
+  window.addEventListener('resize', () => { clearTimeout(rxResize); rxResize = setTimeout(() => { if (S.view === 'raiox') RXDRAW.forEach(([b, f]) => { try { f(b); } catch (e) { /* mantém o anterior */ } }); }, 150); });
+
+  // ---------- rotas ----------
+  function rota() {
+    const h = decodeURIComponent(location.hash.slice(1) || 'inicio');
+    if (!h.startsWith('q-')) { clearInterval(S.timer); S.acao = null; $('#actionbar').hidden = true; Rascunho.solta(); }
+    if (h.startsWith('q-')) telaQuestao(h.slice(2));
+    else if (h.startsWith('t-')) { const [m, t] = h.slice(2).split('--'); if (META.topicos[m]) telaLista({ tipo: 'topico', m, t: (t || '').replace(/-/g, '_') }); else telaInicio(); }
+    else if (h.startsWith('m-') && META.materias[h.slice(2)]) telaMateria(h.slice(2));
+    else if (h.startsWith('i-') && META.materias[h.slice(2)]) telaLista({ tipo: 'inter', m: h.slice(2) });
+    else if (h === 'revisar') telaLista({ tipo: S.revisar });
+    else if (h === 'raiox') telaRaiox();
+    else if (h === 'busca' && S.termo) telaLista({ tipo: 'busca', termo: S.termo });
+    else telaInicio();
+    marcaTabs(); rodape();
+  }
+  function rodape() {
+    const s = estat(QS);
+    $('#rodape').textContent = `${META.fonte} Nível = 500 + 100·b da TRI: a nota a partir da qual a questão costuma ser acertada.` +
+      (aviso ? ` ${aviso}` : s.feitas ? ' Seu progresso fica salvo neste aparelho.' : '');
+  }
+  function redesenha() { if (S.view !== 'questao') rota(); else rodape(); }
+
+  // ---------- progresso: guardado no próprio aparelho ----------
+  const CHAVE = 'enem-natureza-progresso';
+  function guarda() {
+    try { localStorage.setItem(CHAVE, JSON.stringify({ respostas: P.respostas, marcadas: P.marcadas })); }
+    catch (e) { aviso = 'Não foi possível salvar o progresso neste aparelho (armazenamento cheio ou bloqueado).'; rodape(); }
+  }
+  const salvarResp = () => guarda();
+  const salvarMarca = () => guarda();
+  function iniciaProgresso() {
+    try {
+      const d = JSON.parse(localStorage.getItem(CHAVE) || '{}');
+      Object.assign(P.respostas, d.respostas || {}); Object.assign(P.marcadas, d.marcadas || {});
+    } catch (e) { aviso = 'Não foi possível ler o progresso salvo.'; }
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) { /* opcional */ }
+  }
+  function exportar() {
+    const txt = JSON.stringify({ app: 'enem-natureza', em: new Date().toISOString(), respostas: P.respostas, marcadas: P.marcadas });
+    const nome = `enem-natureza-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const arq = new File([txt], nome, { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [arq] })) { navigator.share({ files: [arq], title: 'Backup ENEM Natureza' }).catch(() => {}); return; }
+    const a = el('a', { href: URL.createObjectURL(arq), download: nome }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  }
+  function importar(arquivo, msg) {
+    arquivo.text().then((t) => {
+      const d = JSON.parse(t);
+      if (!d || typeof d.respostas !== 'object') throw new Error('formato');
+      for (const [k, v] of Object.entries(d.respostas)) { if (BY.has(k) && (!P.respostas[k] || P.respostas[k].t <= v.t)) P.respostas[k] = v; }
+      Object.assign(P.marcadas, d.marcadas || {});
+      guarda(); msg.textContent = `Backup importado: ${Object.keys(d.respostas).length} respostas.`; setTimeout(rota, 1200);
+    }).catch(() => { msg.textContent = 'Arquivo inválido. Escolha um backup exportado por este app.'; });
+  }
+
+  // ---------- uso offline: guarda todos os arquivos no aparelho ----------
+  const CDN = ['https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js'];
+  const OFF = { estado: 'verificando', feitos: 0, total: 0, bytes: 0 };
+  function mostraNet() {
+    const n = $('#net'); if (!n) return;
+    const t = { pronto: 'Offline ✓', baixando: `Baixando ${OFF.total ? Math.round(100 * OFF.feitos / OFF.total) : 0}%`, semnet: 'Sem internet', erro: 'Download incompleto', semcache: 'Só online', verificando: '…' }[OFF.estado];
+    n.textContent = t; n.className = 'net' + (OFF.estado === 'pronto' ? ' ok' : OFF.estado === 'baixando' ? ' load' : '');
+    n.title = OFF.estado === 'pronto' ? 'Tudo guardado no aparelho: funciona sem internet.' : '';
+    const p = document.getElementById('off-status'); if (p) p.textContent = textoOffline();
+  }
+  function textoOffline() {
+    return { pronto: 'Tudo guardado neste aparelho. O app funciona sem internet.', baixando: `Guardando arquivos para usar offline: ${OFF.feitos} de ${OFF.total}. Mantenha o app aberto e com internet até terminar.`,
+      semnet: localStorage.getItem('enem-versao') ? 'Sem internet agora. Os arquivos já guardados continuam funcionando.' : 'Sem internet. Abra o app uma vez com internet para guardar as questões no aparelho.',
+      erro: 'Alguns arquivos não foram guardados. Abra o app com internet para tentar de novo.', semcache: 'Este navegador não permite guardar o app para uso offline.', verificando: 'Verificando arquivos guardados…' }[OFF.estado];
+  }
+  async function preparaOffline() {
+    if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('sw.js'); } catch (e) { /* segue sem */ } }
+    if (!('caches' in window)) { OFF.estado = 'semcache'; mostraNet(); return; }
+    let lista;
+    try { const r = await fetch('dados/arquivos.json', { cache: 'no-store' }); if (!r.ok) throw new Error(); lista = await r.json(); }
+    catch (e) { OFF.estado = localStorage.getItem('enem-versao') ? 'pronto' : 'semnet'; mostraNet(); return; }
+    const nome = 'enem-dados-' + lista.versao;
+    const urls = ['./', 'index.html', 'manifest.webmanifest', 'dados/arquivos.json', ...lista.arquivos.filter((a) => a !== 'index.html' && a !== 'manifest.webmanifest')];
+    const cache = await caches.open(nome);
+    const ja = new Set((await cache.keys()).map((r) => r.url));
+    const falta = urls.filter((u) => !ja.has(new URL(u, location.href).href));
+    const faltaCdn = CDN.filter((u) => !ja.has(u));
+    OFF.total = urls.length + CDN.length; OFF.feitos = OFF.total - falta.length - faltaCdn.length;
+    if (!falta.length && !faltaCdn.length) { OFF.estado = 'pronto'; localStorage.setItem('enem-versao', lista.versao); mostraNet(); limpaVelhos(nome); return; }
+    OFF.estado = 'baixando'; mostraNet();
+    let erros = 0;
+    const fila = [...falta.map((u) => [u, false]), ...faltaCdn.map((u) => [u, true])];
+    async function trabalhador() {
+      while (fila.length) {
+        const [u, externo] = fila.shift();
+        try {
+          const req = externo ? new Request(u, { mode: 'no-cors' }) : new Request(u, { cache: 'reload' });
+          const res = await fetch(req);
+          if (!externo && !res.ok) throw new Error(res.status);
+          await cache.put(externo ? u : req, res);
+        } catch (e) { erros++; }
+        OFF.feitos++; if (OFF.feitos % 10 === 0 || !fila.length) mostraNet();
+      }
+    }
+    await Promise.all(Array.from({ length: 6 }, trabalhador));
+    if (erros) { OFF.estado = 'erro'; } else { OFF.estado = 'pronto'; localStorage.setItem('enem-versao', lista.versao); limpaVelhos(nome); }
+    mostraNet();
+  }
+  async function limpaVelhos(atual) { try { for (const k of await caches.keys()) if (k.startsWith('enem-dados-') && k !== atual) await caches.delete(k); } catch (e) { /* ok */ } }
+
+  // ---------- rascunho à mão (dedo ou Apple Pencil) ----------
+  const Rascunho = (() => {
+    let db = null;
+    const abreDb = () => db || (db = new Promise((ok) => {
+      try { const r = indexedDB.open('enem-rascunhos', 1); r.onupgradeneeded = () => r.result.createObjectStore('r'); r.onsuccess = () => ok(r.result); r.onerror = () => ok(null); }
+      catch (e) { ok(null); }
+    }));
+    const leDb = async (k) => { const d = await abreDb(); if (!d) return null; return new Promise((ok) => { const q = d.transaction('r').objectStore('r').get(k); q.onsuccess = () => ok(q.result || null); q.onerror = () => ok(null); }); };
+    const gravaDb = async (k, v) => { const d = await abreDb(); if (!d) return; d.transaction('r', 'readwrite').objectStore('r').put(v, k); };
+    const apagaDb = async (k) => { const d = await abreDb(); if (!d) return; d.transaction('r', 'readwrite').objectStore('r').delete(k); };
+
+    const CORES = [['Preto', 'var(--ink)'], ['Azul', '#2f6fe4'], ['Vermelho', '#e0352b']];
+    const st = { ativo: false, modo: 'caneta', cor: 0, caneta: false, telas: [], qid: null, desfazer: [], refazer: [], timer: null };
+
+    function corReal(i) { return i === 0 ? getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#111' : CORES[i][1]; }
+    function cria(host, nome) {
+      const c = el('canvas', { class: 'tinta', 'aria-hidden': 'true' });
+      host.append(c);
+      const tela = { c, host, nome, tracos: [], ctx: c.getContext('2d') };
+      new ResizeObserver(() => desenha(tela)).observe(host);
+      ligar(tela);
+      return tela;
+    }
+    function desenha(t) {
+      const w = t.host.clientWidth, h = t.host.clientHeight, dpr = window.devicePixelRatio || 1;
+      if (!w || !h) return;
+      if (t.c.width !== Math.round(w * dpr) || t.c.height !== Math.round(h * dpr)) { t.c.width = Math.round(w * dpr); t.c.height = Math.round(h * dpr); }
+      const g = t.ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+      t.tracos.forEach((tr) => traco(g, tr, w));
+    }
+    function traco(g, tr, w) {
+      const p = tr.p; if (!p.length) return;
+      g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+      g.strokeStyle = tr.c; g.globalAlpha = tr.a || 1;
+      const larg = (k) => (tr.w * w / 400) * (0.55 + (p[k][2] ?? 0.5) * 0.9);
+      if (tr.mt) { g.lineWidth = tr.w * w / 400; g.beginPath(); g.moveTo(p[0][0] * w, p[0][1] * w); for (let k = 1; k < p.length; k++) g.lineTo(p[k][0] * w, p[k][1] * w); g.stroke(); g.restore(); return; }
+      if (p.length === 1) { g.fillStyle = tr.c; g.beginPath(); g.arc(p[0][0] * w, p[0][1] * w, larg(0) / 2, 0, Math.PI * 2); g.fill(); g.restore(); return; }
+      for (let k = 1; k < p.length; k++) {
+        const a = p[k - 1], b = p[k], c = p[k + 1];
+        g.lineWidth = larg(k);
+        g.beginPath();
+        const mx1 = k === 1 ? a[0] : (p[k - 2][0] + a[0]) / 2, my1 = k === 1 ? a[1] : (p[k - 2][1] + a[1]) / 2;
+        g.moveTo(((mx1 + a[0]) / 2) * w, ((my1 + a[1]) / 2) * w);
+        g.quadraticCurveTo(a[0] * w, a[1] * w, ((a[0] + b[0]) / 2) * w, ((a[1] + b[1]) / 2) * w);
+        if (!c) g.lineTo(b[0] * w, b[1] * w);
+        g.stroke();
+      }
+      g.restore();
+    }
+    function ligar(t) {
+      let atual = null, idPtr = null, apagados = null;
+      const toques = new Map(); let rolando = false;   // dois dedos (ou um dedo, quando há Apple Pencil) rolam a tela
+      const pos = (ev) => { const r = t.c.getBoundingClientRect(), w = r.width || 1; return [(ev.clientX - r.left) / w, (ev.clientY - r.top) / w, ev.pointerType === 'pen' ? (ev.pressure || 0.5) : 0.5]; };
+      t.c.addEventListener('pointerdown', (ev) => {
+        if (!st.ativo) return;
+        if (ev.pointerType === 'pen') st.caneta = true;
+        if (ev.pointerType === 'touch') {
+          toques.set(ev.pointerId, ev.clientY);
+          if (st.caneta || toques.size >= 2) {
+            if (atual && toques.size >= 2) { t.tracos = t.tracos.filter((tr) => tr !== atual); atual = null; idPtr = null; desenha(t); }
+            rolando = true; ev.preventDefault(); return;
+          }
+        }
+        if (idPtr !== null) return;
+        ev.preventDefault(); idPtr = ev.pointerId; try { t.c.setPointerCapture(ev.pointerId); } catch (e) { /* ok */ }
+        if (st.modo === 'borracha') { apagados = []; apaga(t, pos(ev), apagados); return; }
+        const mt = st.modo === 'marca';
+        atual = { p: [pos(ev)], c: mt ? '#f5c518' : corReal(st.cor), w: mt ? 14 : 2.2, a: mt ? 0.35 : 1, mt };
+        t.tracos.push(atual); desenha(t);
+      });
+      t.c.addEventListener('pointermove', (ev) => {
+        if (ev.pointerType === 'touch' && toques.has(ev.pointerId)) {
+          const y0 = toques.get(ev.pointerId); toques.set(ev.pointerId, ev.clientY);
+          if (rolando) { ev.preventDefault(); window.scrollBy(0, (y0 - ev.clientY) / toques.size); return; }
+        }
+        if (ev.pointerId !== idPtr) return;
+        ev.preventDefault();
+        const evs = ev.getCoalescedEvents ? ev.getCoalescedEvents() : [ev];
+        if (apagados) { evs.forEach((e) => apaga(t, pos(e), apagados)); return; }
+        if (!atual) return;
+        evs.forEach((e) => { const q = pos(e), u = atual.p[atual.p.length - 1]; if (Math.hypot(q[0] - u[0], q[1] - u[1]) > 0.0015) atual.p.push(q); });
+        desenha(t);
+      });
+      const fim = (ev) => {
+        if (toques.delete(ev.pointerId) && !toques.size) rolando = false;
+        if (ev.pointerId !== idPtr) return;
+        idPtr = null;
+        if (apagados) { if (apagados.length) registra({ tipo: 'apaga', tela: t, tracos: apagados }); apagados = null; return; }
+        if (atual) { atual.p = atual.p.map((q) => [+q[0].toFixed(4), +q[1].toFixed(4), +q[2].toFixed(2)]); registra({ tipo: 'add', tela: t, tracos: [atual] }); atual = null; }
+      };
+      t.c.addEventListener('pointerup', fim); t.c.addEventListener('pointercancel', fim);
+    }
+    function apaga(t, q, lista) {
+      const raio = 0.03;
+      const antes = t.tracos.length;
+      t.tracos = t.tracos.filter((tr) => { const perto = tr.p.some((p) => Math.hypot(p[0] - q[0], p[1] - q[1]) < raio); if (perto) lista.push(tr); return !perto; });
+      if (t.tracos.length !== antes) desenha(t);
+    }
+    function registra(op) { st.desfazer.push(op); st.refazer = []; salva(); atualizaBotoes(); }
+    function aplica(op, inverso) {
+      const t = op.tela;
+      const tirar = (op.tipo === 'add') !== inverso;
+      if (tirar) t.tracos = t.tracos.filter((tr) => !op.tracos.includes(tr)); else t.tracos.push(...op.tracos);
+      desenha(t);
+    }
+    function salva() {
+      clearTimeout(st.timer);
+      const qid = st.qid;
+      const dados = Object.fromEntries(st.telas.map((t) => [t.nome, t.tracos]));
+      st.timer = setTimeout(() => { if (Object.values(dados).some((v) => v.length)) gravaDb(qid, dados); else apagaDb(qid); }, 400);
+    }
+
+    let botoes = {};
+    function atualizaBotoes() {
+      if (!botoes.lapis) return;
+      botoes.lapis.setAttribute('aria-pressed', String(st.ativo));
+      document.body.classList.toggle('desenhando', st.ativo);
+      botoes.barra.hidden = !st.ativo;
+      ['caneta', 'marca', 'borracha'].forEach((m) => botoes[m] && botoes[m].setAttribute('aria-pressed', String(st.modo === m && (m !== 'caneta' || true))));
+      botoes.cores.forEach((b, i) => b.setAttribute('aria-pressed', String(st.modo === 'caneta' && st.cor === i)));
+      botoes.desfazer.disabled = !st.desfazer.length; botoes.refazer.disabled = !st.refazer.length;
+    }
+    function barra() {
+      const fer = (rotulo, conteudo, onclick) => el('button', { class: 'fer', type: 'button', title: rotulo, 'aria-label': rotulo, onclick }, conteudo);
+      botoes.cores = CORES.map(([n, c], i) => fer('Caneta ' + n.toLowerCase(), el('span', { class: 'cor', style: `background:${c}` }), () => { st.modo = 'caneta'; st.cor = i; atualizaBotoes(); }));
+      botoes.caneta = botoes.cores[0];
+      botoes.marca = fer('Marca-texto', el('span', { class: 'mt', style: 'background:#f5c518' }), () => { st.modo = 'marca'; atualizaBotoes(); });
+      botoes.borracha = fer('Borracha', ic('x'), () => { st.modo = 'borracha'; atualizaBotoes(); });
+      botoes.desfazer = fer('Desfazer', ic('back'), () => { const op = st.desfazer.pop(); if (op) { aplica(op, false); st.refazer.push(op); salva(); atualizaBotoes(); } });
+      botoes.refazer = fer('Refazer', el('span', { style: 'transform:scaleX(-1);display:grid' }, ic('back')), () => { const op = st.refazer.pop(); if (op) { aplica(op, true); st.desfazer.push(op); salva(); atualizaBotoes(); } });
+      const limpar = fer('Limpar tudo desta questão', el('span', { style: 'font-size:.7rem;font-weight:700' }, 'Limpar'), () => {
+        const ops = st.telas.filter((t) => t.tracos.length).map((t) => ({ tipo: 'apaga', tela: t, tracos: t.tracos.slice() }));
+        ops.forEach((op) => { op.tela.tracos = []; desenha(op.tela); st.desfazer.push(op); });
+        st.refazer = []; salva(); atualizaBotoes();
+      });
+      limpar.style.width = 'auto'; limpar.style.padding = '0 10px';
+      botoes.barra = el('div', { class: 'ferramentas', role: 'toolbar', 'aria-label': 'Ferramentas de rascunho', hidden: !st.ativo },
+        ...botoes.cores, botoes.marca, botoes.borracha, el('span', { class: 'sep' }), botoes.desfazer, botoes.refazer, el('span', { class: 'sep' }), limpar);
+      return botoes.barra;
+    }
+    function botaoLapis() {
+      botoes.lapis = el('button', { class: 'btn icon lapis', type: 'button', title: 'Rascunho: escrever na tela', 'aria-label': 'Rascunho: escrever na tela', 'aria-pressed': String(st.ativo),
+        onclick: () => { st.ativo = !st.ativo; atualizaBotoes(); } },
+        (() => { const s = ic('strike'); s.innerHTML = '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'; return s; })());
+      return botoes.lapis;
+    }
+    async function anexa(qid, paper, folhaHost) {
+      solta(false);
+      st.qid = qid; st.desfazer = []; st.refazer = [];
+      st.telas = [cria(paper, 'sobre'), cria(folhaHost, 'folha')];
+      const salvo = await leDb(qid);
+      if (st.qid !== qid) return;
+      if (salvo) st.telas.forEach((t) => { t.tracos = salvo[t.nome] || []; desenha(t); });
+      atualizaBotoes();
+    }
+    function solta(desligar) {
+      st.telas = []; st.qid = null;
+      if (desligar !== false) { botoes = {}; st.ativo = false; document.body.classList.remove('desenhando'); }
+    }
+    return { anexa, solta, barra, botaoLapis };
+  })();
+
+  // ---------- eventos ----------
+  document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => ir(b.dataset.go)));
+  $('#brand').addEventListener('click', () => ir('inicio'));
+  $('#sortear-topo').addEventListener('click', () => sortear(S.view === 'inicio' ? { tipo: 'tudo' } : S.escopo, S.qid));
+  $('#busca-form').addEventListener('submit', (ev) => { ev.preventDefault(); const t = $('#busca').value.trim(); if (!t) return; S.termo = t; $('#busca').blur(); ir('busca'); });
+  document.addEventListener('keydown', (ev) => {
+    const tag = ev.target.tagName;
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (ev.key === '/' && tag !== 'INPUT') { ev.preventDefault(); $('#busca').focus(); return; }
+    if (/INPUT|SELECT|TEXTAREA/.test(tag)) return;
+    const k = ev.key.length === 1 ? ev.key.toUpperCase() : ev.key;
+    if (k === 'N') { ev.preventDefault(); sortear(S.view === 'inicio' ? { tipo: 'tudo' } : S.escopo, S.qid); return; }
+    if (S.view !== 'questao' || !S.acao) return;
+    if ('ABCDE'.includes(k) && k.length === 1) { ev.preventDefault(); S.acao.escolhe(k); }
+    else if (k === 'Enter' && !ev.target.classList.contains('btn')) { ev.preventDefault(); S.acao.confirma(); }
+    else if (k === 'ArrowLeft') { ev.preventDefault(); S.acao.prev(); }
+    else if (k === 'ArrowRight') { ev.preventDefault(); S.acao.next(); }
+  });
+  window.addEventListener('hashchange', rota);
+
+  fetch('dados/questoes.json').then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then((d) => {
+    META = d.meta; QS = d.questoes;
+    QS.forEach((q) => { BY.set(q.id, q); q._b = norm([q.sub, topo(q.m, q.t).nome, nomeM(q.m), q.s ? nomeM(q.s) : '', q.ano, q.txt.replace(/!\[[^\]]*\]\([^)]*\)/g, ''), q.intro].join(' ')); });
+    iniciaProgresso(); rota(); preparaOffline();
+  }).catch(() => {
+    $('#main').replaceChildren(el('div', { class: 'card empty' }, el('h2', { text: 'Não foi possível carregar as questões' }), el('p', { class: 'muted', text: 'Recarregue a página. Se o erro continuar, peça para publicar os dados de novo.' })));
+  });
+})();
+</script>
+
+</body>
+</html>
